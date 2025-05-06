@@ -40,6 +40,9 @@ model User {
 
   sessions Session[]
   accounts Account[]
+  groceryTrips   GroceryTrip[]
+  items          Item[]
+  reminders      Reminder[]
 
   // better-auth-admin
   role       String    @default("user")
@@ -114,4 +117,90 @@ model UTImage {
 
   @@index([userId])
   @@map("ut_images")
+}
+
+model Item {
+  id              Int            @id @default(autoincrement())
+  name            String
+  description     String         @default("")
+  price           Float
+  quantity        Int
+  importId        String         @default("")
+  unit            String         @default("")
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+  status          ItemStatusType @default(FRESH)
+  percentConsumed Int            @default(0)
+  userId          String
+  groceryTripId   Int
+  groceryTrip     GroceryTrip    @relation(fields: [groceryTripId], references: [id], onDelete: Cascade)
+  receiptId       Int?
+  receipt         Receipt?       @relation(fields: [receiptId], references: [id], onDelete: Cascade)
+  user            User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  reminders       Reminder[]
+  itemTypes       ItemType[]
+}
+
+model ItemType {
+  id                          Int      @id @default(autoincrement())
+  createdAt                   DateTime @default(now())
+  updatedAt                   DateTime @updatedAt
+  name                        String   @unique
+  category                    String
+  storage_advice              String
+  suggested_life_span_seconds Int
+  items                       Item[]
+}
+
+model GroceryTrip {
+  id          Int       @id @default(autoincrement())
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  name        String
+  description String    @default("")
+  userId      String
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  items       Item[]
+  receipts    Receipt[]
+}
+
+model Receipt {
+  id            Int           @id @default(autoincrement())
+  url           String
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+  groceryTripId Int?
+  GroceryTrip   GroceryTrip?  @relation(fields: [groceryTripId], references: [id], onDelete: Cascade)
+  items         Item[]
+  status        ReceiptStatus @default(PROCESSING)
+  scrapedData   Json?
+}
+
+model Reminder {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  time      DateTime
+  itemId    Int
+  userId    String
+  item      Item     @relation(fields: [itemId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+enum TokenType {
+  RESET_PASSWORD
+}
+
+enum ItemStatusType {
+  BAD
+  OLD
+  FRESH
+  EATEN
+  DISCARDED
+}
+
+enum ReceiptStatus {
+  PROCESSING
+  IMPORTED
+  ERROR
 }
