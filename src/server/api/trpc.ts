@@ -27,15 +27,15 @@ import { db } from "@/server/db";
  * @see https://trpc.io/docs/server/context
  */
 export const createTRPCContext = async (opts: { headers: Headers }) => {
-  const session = await auth.api.getSession({
-    headers: opts.headers,
-  });
+	const session = await auth.api.getSession({
+		headers: opts.headers,
+	});
 
-  return {
-    db,
-    session,
-    ...opts,
-  };
+	return {
+		db,
+		session,
+		...opts,
+	};
 };
 
 /**
@@ -46,17 +46,17 @@ export const createTRPCContext = async (opts: { headers: Headers }) => {
  * errors on the backend.
  */
 const t = initTRPC.context<typeof createTRPCContext>().create({
-  transformer: superjson,
-  errorFormatter({ shape, error }) {
-    return {
-      ...shape,
-      data: {
-        ...shape.data,
-        zodError:
-          error.cause instanceof ZodError ? error.cause.flatten() : null,
-      },
-    };
-  },
+	transformer: superjson,
+	errorFormatter({ shape, error }) {
+		return {
+			...shape,
+			data: {
+				...shape.data,
+				zodError:
+					error.cause instanceof ZodError ? error.cause.flatten() : null,
+			},
+		};
+	},
 });
 
 /**
@@ -86,25 +86,25 @@ export const createTRPCRouter = t.router;
  * Can be disabled via the ENABLE_ARTIFICIAL_TRPC_DELAY env variable.
  */
 const timingMiddleware = t.middleware(async ({ next, path }) => {
-  // Apply delay and log time only in dev mode AND if the env var is true
-  if (t._config.isDev && serverEnv.ENABLE_ARTIFICIAL_TRPC_DELAY) {
-    const start = Date.now();
-    const waitMs = Math.floor(Math.random() * 400) + 100;
-    await new Promise((resolve) => setTimeout(resolve, waitMs));
+	// Apply delay and log time only in dev mode AND if the env var is true
+	if (t._config.isDev && serverEnv.ENABLE_ARTIFICIAL_TRPC_DELAY) {
+		const start = Date.now();
+		const waitMs = Math.floor(Math.random() * 400) + 100;
+		await new Promise((resolve) => setTimeout(resolve, waitMs));
 
-    const realBefore = Date.now();
-    const result = await next();
-    const end = Date.now();
+		const realBefore = Date.now();
+		const result = await next();
+		const end = Date.now();
 
-    console.log(
-      `[TRPC Dev] ${path} took ${end - realBefore}ms to execute (including fake delay, total: ${end - start}ms)`,
-    );
+		console.log(
+			`[TRPC Dev] ${path} took ${end - realBefore}ms to execute (including fake delay, total: ${end - start}ms)`,
+		);
 
-    return result;
-  } else {
-    // If not in dev or delay disabled, just execute the procedure without delay or logging
-    return await next();
-  }
+		return result;
+	} else {
+		// If not in dev or delay disabled, just execute the procedure without delay or logging
+		return await next();
+	}
 });
 
 /**
@@ -125,19 +125,19 @@ export const publicProcedure = t.procedure.use(timingMiddleware);
  * @see https://trpc.io/docs/procedures
  */
 export const protectedProcedure = t.procedure
-  .use(timingMiddleware)
-  .use(({ ctx, next }) => {
-    if (!ctx.session?.user) {
-      throw new TRPCError({ code: "UNAUTHORIZED" });
-    }
+	.use(timingMiddleware)
+	.use(({ ctx, next }) => {
+		if (!ctx.session?.user) {
+			throw new TRPCError({ code: "UNAUTHORIZED" });
+		}
 
-    return next({
-      ctx: {
-        // infers the `session` as non-nullable
-        session: { ...ctx.session, user: ctx.session.user },
-      },
-    });
-  });
+		return next({
+			ctx: {
+				// infers the `session` as non-nullable
+				session: { ...ctx.session, user: ctx.session.user },
+			},
+		});
+	});
 
 /**
  * Admin (authenticated and admin role) procedure
@@ -147,16 +147,16 @@ export const protectedProcedure = t.procedure
  *
  */
 export const adminProcedure = protectedProcedure.use(({ ctx, next }) => {
-  if (ctx.session.user.role !== "admin") {
-    throw new TRPCError({
-      code: "UNAUTHORIZED",
-      message: "User does not have admin privileges",
-    });
-  }
+	if (ctx.session.user.role !== "admin") {
+		throw new TRPCError({
+			code: "UNAUTHORIZED",
+			message: "User does not have admin privileges",
+		});
+	}
 
-  return next({
-    ctx: {
-      session: { ...ctx.session, user: ctx.session.user },
-    },
-  });
+	return next({
+		ctx: {
+			session: { ...ctx.session, user: ctx.session.user },
+		},
+	});
 });
