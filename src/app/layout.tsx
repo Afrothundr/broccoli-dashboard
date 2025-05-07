@@ -1,7 +1,7 @@
 import "@/styles/globals.css";
 
 import { GeistSans } from "geist/font/sans";
-import { type Metadata } from "next";
+import type { Metadata } from "next";
 import { Toaster } from "@/components/ui/toaster";
 import { TRPCReactProvider } from "@/trpc/react";
 
@@ -19,9 +19,9 @@ import { APP_NAME, APP_DESCRIPTION } from "@/config/config";
 import { LevaPanel } from "@/components/dev/LevaPanel";
 
 export const metadata: Metadata = {
-  title: APP_NAME,
-  description: APP_DESCRIPTION,
-  icons: [{ rel: "icon", url: "/favicon.ico" }],
+	title: APP_NAME,
+	description: APP_DESCRIPTION,
+	icons: [{ rel: "icon", url: "/favicon.ico" }],
 };
 
 // you can use this instead of <ThemeColorUpdater/>  if you want it to be set based on the OS system settings
@@ -34,37 +34,37 @@ export const metadata: Metadata = {
 // };
 
 export default async function RootLayout({
-  children,
+	children,
 }: Readonly<{ children: React.ReactNode }>) {
-  return (
-    <html
-      lang="en"
-      className={`${GeistSans.variable}`}
-      suppressHydrationWarning
-    >
-      <head>
-        <meta name="apple-mobile-web-app-title" content={APP_NAME} />
-      </head>
-      <body className="vertical min-h-screen">
-        <NuqsAdapter>
-          <TRPCReactProvider>
-            <ThemeWrapper>
-              <MediaQueriesProvider>
-                <KitzeUIProviders>
-                  <ErrorBoundary FallbackComponent={RootErrorFallback}>
-                    <Suspense fallback={<FullPageSpinner />}>
-                      {children}
-                    </Suspense>
-                  </ErrorBoundary>
-                  <RegisterHotkeys hotkeys={hotkeys} />
-                  <Toaster />
-                </KitzeUIProviders>
-              </MediaQueriesProvider>
-            </ThemeWrapper>
-          </TRPCReactProvider>
-        </NuqsAdapter>
-        <LevaPanel />
-      </body>
-    </html>
-  );
+	return (
+		<html
+			lang="en"
+			className={`${GeistSans.variable}`}
+			suppressHydrationWarning
+		>
+			<head>
+				<meta name="apple-mobile-web-app-title" content={APP_NAME} />
+			</head>
+			<body className="vertical min-h-screen">
+				<NuqsAdapter>
+					<TRPCReactProvider>
+						<ThemeWrapper>
+							<MediaQueriesProvider>
+								<KitzeUIProviders>
+									<ErrorBoundary FallbackComponent={RootErrorFallback}>
+										<Suspense fallback={<FullPageSpinner />}>
+											{children}
+										</Suspense>
+									</ErrorBoundary>
+									<RegisterHotkeys hotkeys={hotkeys} />
+									<Toaster />
+								</KitzeUIProviders>
+							</MediaQueriesProvider>
+						</ThemeWrapper>
+					</TRPCReactProvider>
+				</NuqsAdapter>
+				<LevaPanel />
+			</body>
+		</html>
+	);
 }

@@ -4,13 +4,15 @@ import { utImageRouter } from "./routers/utImage";
 import { polarRouter } from "./routers/polar";
 import { authRouter } from "./routers/auth";
 import { adminRouter } from "./routers/admin";
+import { groceryTripRouter } from "./routers/groceryTrip";
 
 export const appRouter = createTRPCRouter({
-  user: userRouter,
-  utImage: utImageRouter,
-  polar: polarRouter,
-  auth: authRouter,
-  admin: adminRouter,
+	user: userRouter,
+	utImage: utImageRouter,
+	polar: polarRouter,
+	auth: authRouter,
+	admin: adminRouter,
+	groceryTrip: groceryTripRouter,
 });
 
 export type AppRouter = typeof appRouter;
