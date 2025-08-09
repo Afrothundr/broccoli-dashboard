@@ -5,6 +5,9 @@ import { polarRouter } from "./routers/polar";
 import { authRouter } from "./routers/auth";
 import { adminRouter } from "./routers/admin";
 import { groceryTripRouter } from "./routers/groceryTrip";
+import { itemTypeRouter } from "./routers/itemType";
+import { itemRouter } from "./routers/item";
+import { receiptRouter } from "./routers/receipt";
 
 export const appRouter = createTRPCRouter({
 	user: userRouter,
@@ -13,6 +16,9 @@ export const appRouter = createTRPCRouter({
 	auth: authRouter,
 	admin: adminRouter,
 	groceryTrip: groceryTripRouter,
+	itemType: itemTypeRouter,
+	item: itemRouter,
+	receipt: receiptRouter,
 });
 
 export type AppRouter = typeof appRouter;

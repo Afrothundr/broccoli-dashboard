@@ -17,14 +17,14 @@ export function useUserSetting<K extends PreferenceKey>(
     {
       key,
       defaultValue:
-        finalDefaultValue !== undefined ? finalDefaultValue : undefined,
+        finalDefaultValue ?? undefined,
     },
     { enabled: true },
   );
 
   const updatePreferenceMutation = api.user.updatePreference.useMutation({
     onSuccess: () => {
-      utils.user.getSinglePreference.invalidate({ key });
+      void utils.user.getSinglePreference.invalidate({ key });
     },
   });
 

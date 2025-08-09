@@ -1,4 +1,4 @@
-import React from "react";
+import type React from "react";
 import { cn } from "@/lib/utils";
 import {
   Dialog,
@@ -9,6 +9,8 @@ import {
   DialogPortal,
   DialogOverlay,
   DialogClose,
+  DialogDescription,
+  DialogContent,
 } from "@/components/ui/dialog";
 import * as DialogPrimitive from "@radix-ui/react-dialog";
 import { useControlledOpen } from "@/hooks/useControlledOpen";
@@ -16,6 +18,7 @@ import { useKitzeUI } from "@/components/KitzeUIContext";
 import { BottomDrawer } from "@/components/BottomDrawer";
 import { CustomButton } from "@/components/CustomButton";
 import { XIcon } from "lucide-react";
+import "@/styles/dialog.css";
 
 export type DialogMobileViewType = "keep" | "bottom-drawer";
 
@@ -61,51 +64,8 @@ export interface SimpleDialogProps {
   onSubmit?: () => void;
   submitText?: string;
   cancelText?: string;
+  description?: string;
 }
-
-const sizeToMaxWidth: Record<DialogSize, string> = {
-  sm: "sm:max-w-[425px]",
-  md: "sm:max-w-[550px]",
-  lg: "sm:max-w-[680px]",
-  xl: "sm:max-w-[800px]",
-  "2xl": "sm:max-w-[1024px]",
-  "3xl": "sm:max-w-[1280px]",
-  "4xl": "sm:max-w-[1536px]",
-  "5xl": "sm:max-w-[1920px]",
-  full: "sm:max-w-[100vw]",
-};
-
-// Custom DialogContent that supports showCloseButton prop
-const CustomDialogContent = ({
-  className,
-  children,
-  showCloseButton = true,
-  ...props
-}: React.ComponentProps<typeof DialogPrimitive.Content> & {
-  showCloseButton?: boolean;
-}) => {
-  return (
-    <DialogPortal>
-      <DialogOverlay />
-      <DialogPrimitive.Content
-        data-slot="dialog-content"
-        className={cn(
-          "bg-background data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 fixed top-[50%] left-[50%] z-50 grid w-full max-w-[calc(100%-2rem)] translate-x-[-50%] translate-y-[-50%] gap-4 rounded-lg border p-6 shadow-lg duration-200 sm:max-w-lg",
-          className,
-        )}
-        {...props}
-      >
-        {children}
-        {showCloseButton && (
-          <DialogClose className="ring-offset-background focus:ring-ring data-[state=open]:bg-accent data-[state=open]:text-muted-foreground absolute top-4 right-4 rounded-xs opacity-70 transition-opacity hover:opacity-100 focus:ring-2 focus:ring-offset-2 focus:outline-hidden disabled:pointer-events-none [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4">
-            <XIcon />
-            <span className="sr-only">Close</span>
-          </DialogClose>
-        )}
-      </DialogPrimitive.Content>
-    </DialogPortal>
-  );
-};
 
 export const SimpleDialog = ({
   trigger = "Open",
@@ -123,6 +83,7 @@ export const SimpleDialog = ({
   onSubmit,
   submitText = "Submit",
   cancelText = "Cancel",
+  description,
 }: SimpleDialogProps) => {
   const { isMobile } = useKitzeUI();
   const { isOpen, setIsOpen, close } = useControlledOpen({
@@ -141,7 +102,7 @@ export const SimpleDialog = ({
   };
 
   const footerContent = (onSubmit || showCancel) && (
-    <div className={cn("flex justify-end gap-2 pt-4", classNames.footer)}>
+    <div className={cn("flex justify-end gap-2", classNames.footer)}>
       {showCancel && (
         <CustomButton
           variant="outline"
@@ -197,42 +158,29 @@ export const SimpleDialog = ({
           )}
         </DialogTrigger>
       )}
-      <CustomDialogContent
-        className={cn(
-          sizeToMaxWidth[size],
-          classNames.root,
-          classNames.content,
-        )}
-        showCloseButton={showCloseButton}
-      >
-        <DialogHeader className={classNames.header}>
-          <DialogTitle className={cn(classNames.title, !title && "sr-only")}>
-            {title || "Dialog"}
-          </DialogTitle>
-        </DialogHeader>
-        <div className={cn("py-4", classNames.body)}>{children}</div>
-        {footerContent && (
-          <DialogFooter className={classNames.footer}>
-            {showCancel && (
-              <CustomButton
-                variant="outline"
-                onClick={handleCancel}
-                className={classNames.cancelButton}
-              >
-                {cancelText}
-              </CustomButton>
+      <DialogPortal>
+        <DialogOverlay className="DialogOverlay" />
+        <DialogContent className="DialogContent">
+          <DialogHeader
+            className={cn("items-start space-y-1.5", classNames.header)}
+          >
+            <DialogTitle className={cn(classNames.title, !title && "sr-only")}>
+              {title ?? "Dialog"}
+            </DialogTitle>
+            {description && (
+              <DialogDescription>{description}</DialogDescription>
             )}
-            {onSubmit && (
-              <CustomButton
-                onClick={handleSubmit}
-                className={classNames.submitButton}
-              >
-                {submitText}
-              </CustomButton>
-            )}
-          </DialogFooter>
-        )}
-      </CustomDialogContent>
+          </DialogHeader>
+          <div className={cn("flex-1 space-y-4", classNames.body)}>
+            {children}
+          </div>
+        </DialogContent>
+      </DialogPortal>
+      {footerContent && (
+        <DialogFooter className={cn("pt-4", classNames.footer)}>
+          {footerContent}
+        </DialogFooter>
+      )}
     </Dialog>
   );
 };

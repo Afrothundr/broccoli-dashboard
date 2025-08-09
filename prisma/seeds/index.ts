@@ -2,6 +2,7 @@
 
 import { auth } from "@/server/auth";
 import { PrismaClient } from "@/generated/prisma";
+import { ITEM_TYPES } from "./item_types";
 
 const prisma = new PrismaClient();
 
@@ -50,6 +51,10 @@ const users: {
 await (async function main() {
 	const [admin, user1, user2, user3] = await Promise.all(
 		users.map(async (user) => {
+			const existingUser = await prisma.user.findUnique({
+				where: { email: user.email },
+			});
+			if (existingUser) return;
 			const res = await auth.api.signUpEmail({
 				body: {
 					name: user.name,
@@ -81,4 +86,12 @@ await (async function main() {
 			return res;
 		}),
 	);
+
+	for (const item of Object.values(ITEM_TYPES)) {
+		await prisma.itemType.upsert({
+			where: { name: item.name },
+			update: { ...item },
+			create: { ...item },
+		});
+	}
 })();

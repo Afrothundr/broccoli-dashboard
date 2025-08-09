@@ -21,6 +21,7 @@ export const userPreferencesSchema = z.object({
   analytics: z.boolean().default(true),
   emailMarketing: z.boolean().default(true),
   emailUpdates: z.boolean().default(true),
+  emailFrequency: z.enum(["daily", "weekly", "monthly"]).default("weekly"),
 
   // AI Provider fields (dynamically generated)
   ...providerEnabledFields,

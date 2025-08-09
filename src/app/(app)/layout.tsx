@@ -6,6 +6,7 @@ import {
 } from "@/components/BeautifulOnboarder";
 import { CommandPalette } from "@/components/CommandPalette";
 import { RegisterHotkeys } from "@/components/RegisterHotkeys";
+import { Toaster } from "@/components/ui/toaster";
 import { APP_NAME } from "@/config/config";
 import { userHotkeys } from "@/config/hotkeys";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
@@ -50,8 +51,9 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
       {/* global hotkeys that apply only when user is logged in */}
       <RegisterHotkeys hotkeys={userHotkeys} />
       <CommandPalette />
-      {showOnboarding && <BeautifulOnboarder steps={onboardingSteps} />}
+      {false && <BeautifulOnboarder steps={onboardingSteps} />}
       {children}
+      <Toaster />
     </>
   );
 }

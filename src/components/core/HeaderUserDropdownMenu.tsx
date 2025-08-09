@@ -1,5 +1,5 @@
 import { CommonMenuItem } from "@/components/CommonMenuItem";
-import { Settings, UserCog, Crown } from "lucide-react";
+import { Settings, Crown } from "lucide-react";
 import { LogoutMenuItem } from "@/components/auth/LogoutMenuItem";
 import { type LucideIcon } from "lucide-react";
 import { useSettingsDialog } from "@/hooks/useSettingsDialog";
@@ -82,10 +82,6 @@ export function HeaderUserDropdownMenu({ links }: HeaderUserDropdownMenuProps) {
 
       <CommonMenuItem onClick={openSettings} leftIcon={Settings}>
         Settings
-      </CommonMenuItem>
-
-      <CommonMenuItem onClick={handleEditProfileClick} leftIcon={UserCog}>
-        Edit Profile
       </CommonMenuItem>
 
       <AdminStatusMenuItem />
