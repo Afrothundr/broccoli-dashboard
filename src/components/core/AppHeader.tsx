@@ -12,7 +12,7 @@ export default function AppHeader() {
   const { isMobile } = useKitzeUI();
 
   // Links are filtered inside the respective components
-  const userLinks = [homeLink, blogLink];
+  const userLinks = [blogLink];
   const headerLinks = [chatLink];
 
   return (

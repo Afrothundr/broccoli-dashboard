@@ -39,22 +39,10 @@ export function SettingsModal({}: SettingsModalProps) {
       content: <SettingsTabAppearance />,
     },
     {
-      value: "shortcuts",
-      label: "Shortcuts",
-      icon: Keyboard,
-      content: <SettingsTabShortcuts />,
-    },
-    {
       value: "password",
       label: "Password",
       icon: Lock,
       content: <SettingsTabPasswordChange />,
-    },
-    {
-      value: "ai",
-      label: "AI Providers",
-      icon: Cpu,
-      content: <SettingsTabAI />,
     },
     clientEnv.NEXT_PUBLIC_ENABLE_POLAR && {
       value: "billing",
