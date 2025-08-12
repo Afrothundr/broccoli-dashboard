@@ -4,7 +4,12 @@ import { SimpleDialog } from "../SimpleDialog";
 import { ReceiptGallery } from "./ReceiptGallery";
 import { ReceiptImportWizard } from "./ReceiptImportWizard";
 import { ItemsTable } from "./ItemsTable";
-import { type GroceryTrip, type Item, type Receipt } from "@/generated/prisma";
+import {
+  type ItemType,
+  type GroceryTrip,
+  type Item,
+  type Receipt,
+} from "@/generated/prisma";
 import { useEffect, useState } from "react";
 interface TripDetailsDialogProps {
   trip: unknown;
@@ -20,12 +25,14 @@ export const TripDetailsDialog: React.FC<TripDetailsDialogProps> = ({
   refetchTrip,
 }) => {
   const _trip = trip as GroceryTrip & {
-    items: Item[];
+    items: (Item & { itemTypes: ItemType[] })[];
     receipts: (Receipt & { items: Item[] })[];
   };
   const [activeReceipt, setActiveReceipt] = useState(_trip?.receipts?.[0]);
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
   const itemsToImport =
-    JSON.parse((activeReceipt?.scrapedData as string) ?? "{}")?.items?.length ||
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    JSON.parse((activeReceipt?.scrapedData as string) ?? "{}")?.items?.length ??
     0;
 
   useEffect(() => {

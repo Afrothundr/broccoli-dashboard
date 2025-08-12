@@ -43,13 +43,13 @@ export const ItemForm = ({
   isImport = false,
   isLoading = false,
 }: {
-  defaultValues?: UpdateItemSchemaType;
+  defaultValues?: Partial<UpdateItemSchemaType>;
   onSubmit: (values: UpdateItemSchemaType) => void;
   onCancel: () => void;
   isImport?: boolean;
   isLoading?: boolean;
 }) => {
-  const { types: itemTypes, isLoading: isLoadingItemTypes } = useItemTypes();
+  const { allTypes: itemTypes, isLoading: isLoadingItemTypes } = useItemTypes();
   const form = useForm<UpdateItemFormSchemaType>({
     resolver: async (data, context, options) => {
       const transformedData = {
@@ -75,7 +75,7 @@ export const ItemForm = ({
       importId: "",
       itemTypes: [],
       percentConsumed: defaultValues?.percentConsumed ?? 0,
-      status: ItemStatusType.FRESH,
+      status: defaultValues?.status ?? ItemStatusType.FRESH,
     },
   });
   const { reset, setValue, watch } = form;
@@ -83,24 +83,33 @@ export const ItemForm = ({
     if (defaultValues) {
       reset({
         ...defaultValues,
-        itemTypes: defaultValues.itemTypes.map((type) => type?.id?.toString()),
-        price: defaultValues.price.toFixed(2),
+        itemTypes: defaultValues?.itemTypes?.map((type) =>
+          type?.id?.toString(),
+        ),
+        price: Number.parseFloat(`${defaultValues.price}`)
+          .toFixed(2)
+          .toString(),
         status:
           defaultValues.status === ItemStatusType.DISCARDED ||
           defaultValues.status === ItemStatusType.EATEN
             ? defaultValues.status
             : undefined,
-      });
+      } as UpdateItemFormSchemaType & { itemTypes: string[] });
     }
   }, [defaultValues, reset]);
 
   const handleSubmit = (values: UpdateItemFormSchemaType) => {
     const parsedValues = {
       ...values,
-      price: Number.parseFloat(values.price as unknown as string),
+      id: values.id ?? defaultValues?.id,
+      price: values.price,
+      quantity: values.quantity ?? defaultValues?.quantity ?? 1,
+      groceryTripId: values.groceryTripId ?? defaultValues?.groceryTripId,
+      percentConsumed:
+        values.percentConsumed ?? defaultValues?.percentConsumed ?? 0,
       status: values.status ?? defaultValues?.status,
     };
-    onSubmit(parsedValues as UpdateItemFormSchemaType);
+    onSubmit(parsedValues as UpdateItemSchemaType);
   };
 
   return (
@@ -145,17 +154,20 @@ export const ItemForm = ({
                 <span>Status:</span>
                 <Badge
                   color={getItemStatusColor(
-                    (watch("status") as ItemStatusType) ||
-                      defaultValues?.status,
+                    watch("status")! || defaultValues?.status,
                   )}
                 >
-                  {watch("status") || defaultValues?.status}
+                  {watch("status") ?? defaultValues?.status}
                 </Badge>
               </div>
             }
             wrapperClassName="flex flex-col w-fit"
             options={[
-              { label: "In progress", value: "", leftIcon: Clock7 },
+              {
+                label: "In progress",
+                value: defaultValues?.status ?? "",
+                leftIcon: Clock7,
+              },
               {
                 label: "Eaten",
                 value: ItemStatusType.EATEN,
@@ -175,6 +187,7 @@ export const ItemForm = ({
             label="How much did you eat?"
           >
             {(field) => {
+              // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
               const { value, ...rest } = field;
               return (
                 <div className="mt-2 flex items-baseline gap-3">
@@ -183,7 +196,7 @@ export const ItemForm = ({
                     {...rest}
                     defaultValue={[value]}
                     onValueCommit={(commit) =>
-                      setValue("percentConsumed", commit?.[0] || 0)
+                      setValue("percentConsumed", commit?.[0] ?? 0)
                     }
                   />
                   <span className="text-muted-foreground text-sm">100%</span>

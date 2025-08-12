@@ -1,12 +1,6 @@
 "use client";
 
-import {
-  ArrowRight,
-  CheckCircle2,
-  HeartHandshake,
-  Lightbulb,
-  Users,
-} from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import Link from "next/link";
 import { createAvatar } from "@dicebear/core";
 import { personas } from "@dicebear/collection";
@@ -15,20 +9,6 @@ import { GradientText } from "@/components/GradientText";
 
 export default function AboutPageContent() {
   // Generate team avatars using DiceBear
-  const teamAvatars = [
-    createAvatar(personas, {
-      seed: "jane",
-      backgroundColor: ["b6e3f4"],
-    }).toDataUri(),
-    createAvatar(personas, {
-      seed: "john",
-      backgroundColor: ["c0aede"],
-    }).toDataUri(),
-    createAvatar(personas, {
-      seed: "sarah",
-      backgroundColor: ["ffdfbf"],
-    }).toDataUri(),
-  ];
 
   // Animation variants
   const fadeIn = {
@@ -95,49 +75,6 @@ export default function AboutPageContent() {
           Building tools that help businesses scale and succeed in the digital
           economy.
         </p>
-      </motion.div>
-
-      {/* Team Section - Moved higher */}
-      <motion.div
-        className="mb-16"
-        initial="hidden"
-        whileInView="visible"
-        viewport={{ once: true, margin: "-50px" }}
-        variants={staggerContainer}
-      >
-        <motion.div
-          className="grid grid-cols-1 gap-8 md:grid-cols-3"
-          variants={staggerContainer}
-        >
-          {[
-            { avatar: teamAvatars[0], name: "Jane Doe", role: "Founder & CEO" },
-            { avatar: teamAvatars[1], name: "John Smith", role: "CTO" },
-            {
-              avatar: teamAvatars[2],
-              name: "Sarah Johnson",
-              role: "Lead Designer",
-            },
-          ].map((member, index) => (
-            <motion.div
-              key={index}
-              className="text-center"
-              variants={scaleUp}
-              whileHover={{ y: -10, transition: { duration: 0.3 } }}
-            >
-              <div className="mx-auto mb-6">
-                <div className="bg-muted border-primary/10 mx-auto flex h-36 w-36 items-center justify-center overflow-hidden rounded-full border-2">
-                  <img
-                    src={member.avatar}
-                    alt={member.name}
-                    className="h-full w-full object-cover"
-                  />
-                </div>
-              </div>
-              <h3 className="text-lg font-bold">{member.name}</h3>
-              <p className="text-muted-foreground">{member.role}</p>
-            </motion.div>
-          ))}
-        </motion.div>
       </motion.div>
 
       {/* Mission Section */}
@@ -219,61 +156,6 @@ export default function AboutPageContent() {
             Our Values
           </GradientText>
         </motion.h2>
-        <motion.div
-          className="grid grid-cols-1 gap-6 md:grid-cols-2"
-          variants={staggerContainer}
-        >
-          {[
-            {
-              title: "Simplicity",
-              description:
-                "We believe in creating straightforward solutions that solve real problems without unnecessary complexity.",
-              icon: CheckCircle2,
-            },
-            {
-              title: "Transparency",
-              description:
-                "Open communication and honest business practices are at the core of everything we do.",
-              icon: HeartHandshake,
-            },
-            {
-              title: "Innovation",
-              description:
-                "We're constantly exploring new ways to improve our products and create more value for our users.",
-              icon: Lightbulb,
-            },
-            {
-              title: "Customer-Centric",
-              description:
-                "Your success is our success. We prioritize features that directly impact your bottom line.",
-              icon: Users,
-            },
-          ].map((value, index) => (
-            <motion.div
-              key={index}
-              className="border-primary/20 from-background to-primary/5 hover:from-primary/10 rounded-lg border bg-gradient-to-br p-6 transition-colors hover:to-violet-500/10"
-              variants={scaleUp}
-              whileHover={{
-                y: -5,
-                boxShadow:
-                  "0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)",
-                transition: { duration: 0.3 },
-              }}
-            >
-              <div className="flex items-start gap-4">
-                <div className="mt-1">
-                  <value.icon className="text-primary h-6 w-6" />
-                </div>
-                <div>
-                  <h3 className="text-primary mb-2 text-lg font-bold">
-                    {value.title}
-                  </h3>
-                  <p className="text-muted-foreground">{value.description}</p>
-                </div>
-              </div>
-            </motion.div>
-          ))}
-        </motion.div>
       </motion.div>
 
       {/* CTA Section */}
