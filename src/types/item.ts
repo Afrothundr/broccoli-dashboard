@@ -10,7 +10,7 @@ export const updateItem = z.object({
 	id: z.number(),
 	name: z.string(),
 	description: z.string().optional(),
-	price: z.number(),
+	price: z.string(),
 	quantity: z.number(),
 	unit: z.string().optional(),
 	groceryTripId: z.number(),
@@ -23,7 +23,7 @@ export const updateItem = z.object({
 export const createItem = z.object({
 	name: z.string(),
 	description: z.string().optional(),
-	price: z.number(),
+	price: z.string(),
 	quantity: z.number(),
 	unit: z.string().optional(),
 	groceryTripId: z.number(),

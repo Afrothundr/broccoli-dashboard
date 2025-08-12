@@ -1,3 +1,6 @@
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
+/* eslint-disable @typescript-eslint/no-unsafe-call */
+/* eslint-disable react-hooks/rules-of-hooks */
 "use client";
 import { useEffect, useState } from "react";
 import {
@@ -19,27 +22,44 @@ import { Button } from "../ui/button";
 import { InputSelectTrigger, SearchableSelect } from "../SearchableSelect";
 import { useItemTypes } from "@/hooks/useItemTypes";
 import { useItems } from "@/hooks/useItems";
+import { type Item } from "@/generated/prisma";
+
+// Extend the TableMeta interface to include our custom updateData method
+declare module "@tanstack/react-table" {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  interface TableMeta<TData> {
+    updateData?: (columnId: string, original: TData, value: string) => void;
+  }
+}
 interface ItemsTableProps {
-  items: any[];
+  items: PartialItem[];
   onCancel: () => void;
 }
 
+type PartialItem = Pick<
+  Item & { itemTypes: { id: number }[] },
+  "id" | "name" | "price" | "itemTypes"
+>;
+
 export const ItemsTable: React.FC<ItemsTableProps> = ({ items, onCancel }) => {
-  const [itemState, setItemState] = useState<Record<number, any>>({});
+  const [itemState, setItemState] = useState<Record<number, PartialItem>>({});
   const { types: itemTypes } = useItemTypes();
   const { updateItem } = useItems();
 
-  const columns: ColumnDef<any>[] = [
+  const columns: ColumnDef<PartialItem>[] = [
     {
       accessorKey: "name",
       header: "Name",
       size: 5,
       cell: ({ row, table, row: { getValue }, column: { id: columnId } }) => {
         const initialValue =
-          itemState[row.original.id]?.name || getValue("name");
+          itemState[row.original.id]?.name ?? getValue("name");
+        // eslint-disable-next-line react-hooks/rules-of-hooks
         const [value, setValue] = useState(initialValue);
         const onBlur = () => {
-          table.options.meta?.updateData(columnId, row.original, value);
+          if (table.options.meta?.updateData && value !== undefined) {
+            table.options.meta.updateData(columnId, row.original, value);
+          }
         };
         useEffect(() => {
           setValue(initialValue);
@@ -51,8 +71,8 @@ export const ItemsTable: React.FC<ItemsTableProps> = ({ items, onCancel }) => {
             placeholder="Name"
             onChange={(e) => setValue(e.target.value)}
             onBlur={onBlur}
-            defaultValue={initialValue as string}
-            value={value as string}
+            defaultValue={initialValue}
+            value={value}
           />
         );
       },
@@ -67,7 +87,9 @@ export const ItemsTable: React.FC<ItemsTableProps> = ({ items, onCancel }) => {
         ).toFixed(2);
         const [value, setValue] = useState(initialValue);
         const onBlur = () => {
-          table.options.meta?.updateData(columnId, row.original, value);
+          if (table.options.meta?.updateData) {
+            table.options.meta.updateData(columnId, row.original, value);
+          }
         };
         useEffect(() => {
           setValue(initialValue);
@@ -99,24 +121,27 @@ export const ItemsTable: React.FC<ItemsTableProps> = ({ items, onCancel }) => {
       accessorKey: "itemTypes",
       header: "Item Type",
       cell: ({ row, table, row: { getValue }, column: { id: columnId } }) => {
-        const initialValue = (getValue("itemTypes") as any[]) || [];
-        const initialValueId = initialValue[0]?.id;
+        // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
+        const initialValue = (getValue("itemTypes") ?? []) as {
+          id: number;
+        }[];
+        const initialValueId = initialValue?.[0]?.id;
         const startingValue =
-          itemState?.[row.original.id]?.itemTypes || initialValueId;
-        const [value, setValue] = useState(startingValue);
+          itemState?.[row.original.id]?.itemTypes ?? initialValueId;
+        // eslint-disable-next-line @typescript-eslint/no-base-to-string, @typescript-eslint/restrict-template-expressions
+        const [value, setValue] = useState(`${startingValue}`);
         const updateTableState = (val: string) => {
-          table.options.meta?.updateData(columnId, row.original, val);
+          if (table.options.meta?.updateData) {
+            table.options.meta.updateData(columnId, row.original, val);
+          }
         };
-        useEffect(() => {
-          setValue(`${startingValue}`);
-        }, [startingValue]);
-
         return (
           <SearchableSelect
             options={itemTypes.map((type) => ({
               label: type.name,
               value: type.id.toString(),
             }))}
+            // eslint-disable-next-line @typescript-eslint/no-base-to-string, @typescript-eslint/restrict-template-expressions
             value={`${value}`}
             onValueChange={(val) => {
               setValue(val);
@@ -136,15 +161,17 @@ export const ItemsTable: React.FC<ItemsTableProps> = ({ items, onCancel }) => {
     columns,
     getCoreRowModel: getCoreRowModel(),
     meta: {
-      updateData: (columnId, original, value) => {
+      updateData: (columnId: string, original: PartialItem, value: string) => {
         setItemState((state) => {
-          const currentOptions = state[original.id] ?? {};
+          const currentOptions: PartialItem =
+            state[original.id] ?? ({} as PartialItem);
           const originalItemTypes = original?.itemTypes?.[0]?.id;
           return {
             ...state,
             [original.id]: {
               ...original,
               ...currentOptions,
+              // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
               itemTypes: currentOptions.itemTypes || originalItemTypes,
               [columnId]: value,
             },
@@ -158,7 +185,8 @@ export const ItemsTable: React.FC<ItemsTableProps> = ({ items, onCancel }) => {
     for (const update of Object.values(itemState)) {
       const itemUpdate = {
         ...update,
-        price: Number.parseFloat(`${update.price}`),
+        price: `${update.price}`,
+        // eslint-disable-next-line @typescript-eslint/no-base-to-string, @typescript-eslint/restrict-template-expressions
         itemTypes: [{ id: Number.parseInt(`${update.itemTypes}`) }],
       };
       updateItem(itemUpdate);

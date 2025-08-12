@@ -1,6 +1,6 @@
-import { use, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { type CombinedItemType } from "./Inventory";
-import { Item, type Receipt } from "@/generated/prisma";
+import { type Item, type Receipt } from "@/generated/prisma";
 import { ItemForm } from "./ItemForm";
 import {
   Carousel,
@@ -40,9 +40,7 @@ export const ReceiptImportWizard = ({
   const [importedData, setImportedData] = useState<
     (CombinedItemType | ImportedItemProps)[]
   >([]);
-  const [activeItem, setActiveItem] = useState<
-    CombinedItemType | ImportedItemProps | undefined
-  >();
+
   const { createItem } = useItems();
   const { updateReceipt, isLoading: isUpdatingReceipt } = useGroceryTrips();
 
@@ -50,15 +48,7 @@ export const ReceiptImportWizard = ({
     const nextIndex = itemIndex + 1;
     if (nextIndex <= importedData.length - 1) {
       setItemIndex(nextIndex);
-      setActiveItem(importedData[nextIndex]);
     } else {
-    }
-  };
-  const prevStep = () => {
-    const previousIndex = itemIndex - 1;
-    if (itemIndex !== 0) {
-      setItemIndex(previousIndex);
-      setActiveItem(importedData[previousIndex]);
     }
   };
   useEffect(() => {
@@ -85,8 +75,7 @@ export const ReceiptImportWizard = ({
           );
         })
         .filter(Boolean);
-      setImportedData(mergedData);
-      setActiveItem(mergedData[itemIndex]);
+      setImportedData(mergedData as (CombinedItemType | ImportedItemProps)[]);
     }
   }, [receipt, itemIndex, itemTypes]);
 
@@ -121,7 +110,8 @@ export const ReceiptImportWizard = ({
     const scrapedData = JSON.parse(receipt.scrapedData as string);
     if ("items" in scrapedData) {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
-      const items = scrapedData.items;
+      const items = scrapedData.items as unknown[];
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
       items.splice(index, 1);
       // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       const newData = {
@@ -129,7 +119,6 @@ export const ReceiptImportWizard = ({
         // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
         items,
       };
-      console.log({ index, items, newData });
 
       await updateReceipt({
         id: receipt.id,
@@ -142,19 +131,30 @@ export const ReceiptImportWizard = ({
   return (
     <Carousel className="mx-auto w-[85%]">
       <CarouselContent>
-        {Object.values(importedData).map((activeItem, index) => (
-          <CarouselItem key={index}>
-            <div className="p-1">
-              <ItemForm
-                defaultValues={activeItem}
-                onCancel={() => handleSkip(index)}
-                onSubmit={(val) => handleNewItemSave(val)}
-                isImport
-                isLoading={isUpdatingReceipt}
-              />
-            </div>
-          </CarouselItem>
-        ))}
+        {Object.values(importedData).map((activeItem, index) => {
+          const defaultValues: Partial<UpdateItemSchemaType> = {
+            ...activeItem,
+            price: activeItem?.price?.toString() ?? "",
+            itemTypes:
+              activeItem?.itemTypes?.map((type) => ({
+                id: type.id,
+              })) ?? [],
+          };
+
+          return (
+            <CarouselItem key={index}>
+              <div className="p-1">
+                <ItemForm
+                  defaultValues={defaultValues}
+                  onCancel={() => handleSkip(index)}
+                  onSubmit={(val) => handleNewItemSave(val)}
+                  isImport
+                  isLoading={isUpdatingReceipt}
+                />
+              </div>
+            </CarouselItem>
+          );
+        })}
       </CarouselContent>
       <CarouselPrevious />
       <CarouselNext />

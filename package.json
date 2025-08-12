@@ -1,9 +1,10 @@
 {
-	"name": "money-printer",
+	"name": "broccoli-dashboard",
 	"version": "0.1.0",
 	"private": true,
 	"type": "module",
 	"scripts": {
+		  "type-check": "tsc",
 		"dev": "next dev --turbo",
 		"build": "npx prisma migrate deploy && npx prisma generate && next build",
 		"build:turbo": "npx prisma migrate deploy && npx prisma generate && next build --turbo",

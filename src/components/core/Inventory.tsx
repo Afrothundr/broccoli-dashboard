@@ -192,7 +192,7 @@ export const Inventory = () => {
               variant="ghost"
               size="sm"
               onClick={() => {
-                setItemToUpdate(item);
+                setItemToUpdate(item as unknown as UpdateItemSchemaType);
                 setIsItemOpen(true);
               }}
             >

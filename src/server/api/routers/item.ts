@@ -61,12 +61,13 @@ export const itemRouter = createTRPCRouter({
 				throw new TRPCError({ code: "NOT_FOUND", message: "Item not found" });
 			}
 
-			const { itemTypes,  percentConsumed, status, ...rest } = input;
+			const { itemTypes,  percentConsumed, status, price, ...rest } = input;
 
 			const updatedItem = await ctx.db.item.update({
 				where: { id: input.id },
 				data: {
 					...rest,
+					price: Number.parseFloat(price),
 					percentConsumed,
 					status: percentConsumed === 100 ? 'EATEN' : status,
 					itemTypes: {
@@ -94,11 +95,12 @@ export const itemRouter = createTRPCRouter({
 			if (!userId) {
 				throw new TRPCError({ code: "UNAUTHORIZED" });
 			}
-			const { itemTypes, ...rest } = input;
+			const { itemTypes, price, ...rest } = input;
 
 			const createdItem = await ctx.db.item.create({
 				data: {
 					...rest,
+				price: Number.parseFloat(price),
         quantity: 1,
 				percentConsumed: 0,
 				status: "FRESH",

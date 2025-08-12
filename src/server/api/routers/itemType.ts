@@ -20,4 +20,11 @@ export const itemTypeRouter = createTRPCRouter({
 
 		return types;
 	}),
+	getAllItemTypes: protectedProcedure.query(async ({ ctx }) => {
+		const types = await ctx.db.itemType.findMany({
+			orderBy: { createdAt: "asc" },
+		});
+
+		return types;
+	}),
 });

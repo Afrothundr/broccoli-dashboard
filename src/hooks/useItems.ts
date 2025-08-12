@@ -29,8 +29,8 @@ export function useItems(
 	});
 
 
-	const updateItem = (newValue: UpdateItemSchemaType) => {
-		updateItemMutation.mutate(newValue);
+	const updateItem = (newValue: Partial<UpdateItemSchemaType>) => {
+		updateItemMutation.mutate(newValue as UpdateItemSchemaType);
 	};
 	const createItem = async (newValue: CreateItemSchemaType) => {
 		return await createItemMutation.mutateAsync(newValue);
