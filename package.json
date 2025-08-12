@@ -4,7 +4,7 @@
 	"private": true,
 	"type": "module",
 	"scripts": {
-		  "type-check": "tsc",
+		"type-check": "tsc",
 		"dev": "next dev --turbo",
 		"build": "next build",
 		"build:turbo": "npx prisma migrate deploy && npx prisma generate && next build --turbo",
@@ -77,6 +77,7 @@
 		"@types/nodemailer": "^6.4.17",
 		"@uploadthing/react": "^7.3.0",
 		"ai": "^4.3.4",
+		"axios": "^1.11.0",
 		"better-auth": "1.2.8-beta.1",
 		"bullmq": "^5.48.1",
 		"canvas-confetti": "^1.9.3",
