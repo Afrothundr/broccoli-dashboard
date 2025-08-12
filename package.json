@@ -6,7 +6,7 @@
 	"scripts": {
 		"type-check": "tsc",
 		"dev": "next dev --turbo",
-    "build": "p/bin/sh -c 'npm run prisma migrate deploy && next build'",
+    "build": "pnpm db:deploy && next build",
 		"build:turbo": "npx prisma migrate deploy && npx prisma generate && next build --turbo",
 		"db:generate": "prisma generate",
 		"db:studio": "prisma studio",
