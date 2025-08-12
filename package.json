@@ -6,11 +6,12 @@
 	"scripts": {
 		"type-check": "tsc",
 		"dev": "next dev --turbo",
-		"build": "next build",
+    "build": "yarn db:deploy && next build",
 		"build:turbo": "npx prisma migrate deploy && npx prisma generate && next build --turbo",
 		"db:generate": "prisma generate",
 		"db:studio": "prisma studio",
 		"db:migrate": "prisma migrate dev",
+    "db:deploy": "prisma migrate deploy",
 		"db:push": "prisma db push",
 		"db:seed": "bun prisma/seeds/index.ts",
 		"db:reset": "prisma migrate reset",
