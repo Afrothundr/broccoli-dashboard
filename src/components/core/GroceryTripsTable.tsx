@@ -59,7 +59,7 @@ export const GroceryTripsTable: React.FC<GroceryTripsTableProps> = ({
           <TableRow>
             <TableHead>Name</TableHead>
             <TableHead>Date</TableHead>
-            <TableHead>Total Spent</TableHead>
+            <TableHead>Total</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -68,7 +68,7 @@ export const GroceryTripsTable: React.FC<GroceryTripsTableProps> = ({
             return (
               <TableRow key={trip.id}>
                 <TableCell className="font-medium">{trip.name}</TableCell>
-                <TableCell>{dayjs(trip.createdAt).format("ll")}</TableCell>
+                <TableCell>{dayjs(trip.createdAt).format("M/D")}</TableCell>
                 <TableCell>
                   $
                   {trip.items

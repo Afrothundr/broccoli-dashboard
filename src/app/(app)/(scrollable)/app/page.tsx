@@ -21,7 +21,7 @@ export default function AppPage() {
             {dayjs().format("dddd, MMMM D")}
           </p>
         </div>
-        <div className="fixed right-[2rem] bottom-[2rem] z-49 md:relative md:right-0 md:bottom-0">
+        <div className="fixed right-[2rem] bottom-[2rem] z-2 md:relative md:right-0 md:bottom-0">
           <ImageUpload style="floating" />
         </div>
       </div>
