@@ -123,29 +123,29 @@ export const SimpleDialog = ({
     </div>
   );
 
-  if (isMobile && mobileView === "bottom-drawer") {
-    return (
-      <BottomDrawer
-        open={isOpen}
-        onOpenChange={setIsOpen}
-        trigger={trigger}
-        title={drawerTitle || title}
-        classNames={{
-          content: classNames.drawerContent,
-          headerWrapper: classNames.drawerHeader,
-        }}
-      >
-        <div className={classNames.body}>{children}</div>
-        {footerContent && (
-          <div
-            className={cn(classNames.drawerFooter, "px-6 pt-4 pb-6 md:pb-2")}
-          >
-            {footerContent}
-          </div>
-        )}
-      </BottomDrawer>
-    );
-  }
+  // if (isMobile && mobileView === "bottom-drawer") {
+  //   return (
+  //     <BottomDrawer
+  //       open={isOpen}
+  //       onOpenChange={setIsOpen}
+  //       trigger={trigger}
+  //       title={drawerTitle || title}
+  //       classNames={{
+  //         content: classNames.drawerContent,
+  //         headerWrapper: classNames.drawerHeader,
+  //       }}
+  //     >
+  //       <div className={classNames.body}>{children}</div>
+  //       {footerContent && (
+  //         <div
+  //           className={cn(classNames.drawerFooter, "px-6 pt-4 pb-6 md:pb-2")}
+  //         >
+  //           {footerContent}
+  //         </div>
+  //       )}
+  //     </BottomDrawer>
+  //   );
+  // }
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>

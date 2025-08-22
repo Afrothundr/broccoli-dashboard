@@ -6,6 +6,7 @@ import { lorelei } from "@dicebear/collection";
 import { motion } from "framer-motion";
 import { APP_NAME } from "@/config/config";
 import { SmoothLoadImage } from "@/components/SmoothLoadImage";
+import { useCurrentUser } from "@/hooks/useCurrentUser";
 
 // Animated avatar group component
 const AvatarGroup = ({ avatars }: { avatars: string[] }) => {
@@ -40,6 +41,8 @@ export default function LandingHero() {
       backgroundColor: ["b6e3f4", "c0aede", "d1d4f9", "ffd5dc", "ffdfbf"],
     }).toDataUri(),
   );
+
+  const user = useCurrentUser();
 
   return (
     <section className="w-full py-12 md:mt-18 md:py-24 lg:py-32">
@@ -91,12 +94,21 @@ export default function LandingHero() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.5, duration: 0.4 }}
           >
-            <Link
-              href="/signup"
-              className="group relative inline-flex h-12 items-center justify-center overflow-hidden rounded-md bg-lime-600 px-6 font-medium text-white transition-all duration-300 hover:bg-green-700 hover:shadow-[0_0_15px_rgba(139,92,246,0.5)] focus:ring-2 focus:ring-violet-500 focus:ring-offset-2 focus:outline-none dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-500"
-            >
-              <span className="relative z-10">Get Started Free</span>
-            </Link>
+            {user?.id ? (
+              <Link
+                href="/"
+                className="group relative inline-flex h-12 items-center justify-center overflow-hidden rounded-md bg-lime-600 px-6 font-medium text-white transition-all duration-300 hover:bg-green-700 hover:shadow-[0_0_15px_rgba(139,92,246,0.5)] focus:ring-2 focus:ring-violet-500 focus:ring-offset-2 focus:outline-none dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-500"
+              >
+                <span className="relative z-10">Go To Dashboard</span>
+              </Link>
+            ) : (
+              <Link
+                href="/signup"
+                className="group relative inline-flex h-12 items-center justify-center overflow-hidden rounded-md bg-lime-600 px-6 font-medium text-white transition-all duration-300 hover:bg-green-700 hover:shadow-[0_0_15px_rgba(139,92,246,0.5)] focus:ring-2 focus:ring-violet-500 focus:ring-offset-2 focus:outline-none dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-500"
+              >
+                <span className="relative z-10">Get Started Free</span>
+              </Link>
+            )}
           </motion.div>
         </motion.div>
 

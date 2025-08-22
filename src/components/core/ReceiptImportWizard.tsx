@@ -129,7 +129,7 @@ export const ReceiptImportWizard = ({
   };
 
   return (
-    <Carousel className="mx-auto w-[85%]">
+    <Carousel className="mx-auto w-[75vw] md:w-[85%]">
       <CarouselContent>
         {Object.values(importedData).map((activeItem, index) => {
           const defaultValues: Partial<UpdateItemSchemaType> = {
