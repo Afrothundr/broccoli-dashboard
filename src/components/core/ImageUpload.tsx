@@ -8,10 +8,8 @@ import { PlusCircle } from "lucide-react";
 import { toast } from "sonner";
 import { UploadButton, UploadDropzone } from "@/server/uploadthing/uploadthing";
 import type { GroceryTrip } from "@/generated/prisma";
-import { useCurrentUser } from "@/hooks/useCurrentUser";
 import { processImageQueue } from "@/app/api/queue/processImageQueue";
 import { useGroceryTrips } from "@/hooks/useGroceryTrips";
-import { Button } from "../ui/button";
 
 export const ImageUpload = ({
   groceryTripId,
@@ -54,7 +52,7 @@ export const ImageUpload = ({
       case "floating":
         return (
           <div className="z-49 flex">
-            <PlusCircle />
+            <PlusCircle className="mr-0 sm:mr-2" />
             <span className="ml-2">Add Receipt</span>
           </div>
         );
