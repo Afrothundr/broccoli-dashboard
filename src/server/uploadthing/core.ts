@@ -29,6 +29,10 @@ export const ourFileRouter = {
       maxFileSize: "4MB",
       maxFileCount: 1,
     },
+    pdf: {
+      maxFileSize: "4MB",
+      maxFileCount: 1,
+    },
   })
     // Set permissions and file types for this FileRoute
     .middleware(authenticateUser)
