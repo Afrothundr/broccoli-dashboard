@@ -52,7 +52,7 @@ export const ImageUpload = ({
       case "floating":
         return (
           <div className="z-49 flex">
-            <PlusCircle className="mr-0 sm:mr-2" />
+            <PlusCircle className="mr-0" />
             <span className="ml-2">Add Receipt</span>
           </div>
         );
