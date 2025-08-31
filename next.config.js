@@ -20,6 +20,20 @@ const config = {
   experimental: {
     viewTransition: true,
   },
+  async redirects() {
+    return [
+      {
+        source: "/dashboard",
+        destination: "/",
+        permanent: true,
+      },
+      {
+        source: "/inventory",
+        destination: "/",
+        permanent: true,
+      },
+    ];
+  },
 
   env: {
     // pass url here so it's usable on the client and backend

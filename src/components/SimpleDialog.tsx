@@ -160,7 +160,7 @@ export const SimpleDialog = ({
       )}
       <DialogPortal>
         <DialogOverlay className="DialogOverlay" />
-        <DialogContent className="DialogContent">
+        <DialogContent className="DialogContent dark:bg-zinc-900!">
           <DialogHeader
             className={cn("items-start space-y-1.5", classNames.header)}
           >

@@ -12,7 +12,6 @@ import {
   type ItemType,
 } from "@/generated/prisma/client";
 import { Image } from "@imagekit/next";
-import { Skeleton } from "../ui/skeleton";
 import { DataPagination } from "../ui/DataPagination";
 import { Search } from "lucide-react";
 import { useDebounce } from "use-debounce";
@@ -25,15 +24,15 @@ import { Badge } from "../ui/badge";
 function getItemStatusColor(status: ItemStatusType) {
   switch (status) {
     case ItemStatusType.BAD:
-      return "data-[state=on]:bg-red-400 px-4";
+      return "data-[state=on]:bg-red-400 px-4 data-[state=on]:dark:bg-red-400/20 dark:text-red-400";
     case ItemStatusType.OLD:
-      return "data-[state=on]:bg-yellow-400 px-4";
+      return "data-[state=on]:bg-yellow-400 px-4 data-[state=on]:dark:bg-yellow-400/20 dark:text-yellow-400";
     case ItemStatusType.FRESH:
-      return "data-[state=on]:bg-green-400 px-4";
+      return "data-[state=on]:bg-green-400 px-4 data-[state=on]:dark:bg-green-400/20 dark:text-green-400";
     case ItemStatusType.EATEN:
-      return "data-[state=on]:bg-violet-400 px-4";
+      return "data-[state=on]:bg-violet-400 px-4 data-[state=on]:dark:bg-violet-400/20 dark:text-violet-400";
     case ItemStatusType.DISCARDED:
-      return "data-[state=on]:bg-neutral-400 px-6 sm:text-ellipsis";
+      return "data-[state=on]:bg-neutral-400 px-6 sm:text-ellipsis data-[state=on]:dark:bg-neutral-400/20 dark:text-neutral-400";
   }
 }
 
@@ -80,49 +79,6 @@ export const Inventory = () => {
     setItemToUpdate(undefined);
   };
 
-  if (isLoading || isPending) {
-    return (
-      <Card className="col-span-4 p-6 md:row-span-2">
-        {/* Header skeleton */}
-        <div className="mb-6 flex items-center justify-between">
-          <Skeleton className="h-7 w-24" />
-          <Skeleton className="h-8 w-28" />
-        </div>
-
-        {/* Search and filters skeleton */}
-        <div className="flex flex-col gap-1">
-          <div className="relative">
-            <Skeleton className="h-10 w-full" />
-          </div>
-          <div className="mt-3 flex flex-wrap gap-2">
-            <Skeleton className="h-9 w-16" />
-            <Skeleton className="h-9 w-12" />
-            <Skeleton className="h-9 w-12" />
-            <Skeleton className="h-9 w-12" />
-            <Skeleton className="h-9 w-16" />
-          </div>
-        </div>
-
-        {/* Items skeleton */}
-        <div className="mt-6 space-y-3">
-          {Array.from({ length: 9 }).map((_, i) => (
-            <div
-              key={i}
-              className="flex items-center gap-4 rounded-lg border p-3"
-            >
-              <div className="h-9 w-9 animate-pulse rounded-full bg-gray-200" />
-              <div className="flex-1 space-y-1">
-                <div className="h-4 w-1/3 animate-pulse rounded bg-gray-200" />
-                <div className="h-3 w-1/2 animate-pulse rounded bg-gray-200" />
-              </div>
-              <div className="h-8 w-12 animate-pulse rounded bg-gray-200" />
-            </div>
-          ))}
-        </div>
-      </Card>
-    );
-  }
-
   return (
     <Card className="col-span-4 p-6 md:row-span-2">
       <div className="mb-6 flex items-center justify-between">
@@ -136,6 +92,7 @@ export const Inventory = () => {
             placeholder="Search..."
             type="search"
             onChange={(e) => setSearch(e.target.value)}
+            value={search}
           />
         </div>
         <ToggleGroup
@@ -161,67 +118,92 @@ export const Inventory = () => {
         </ToggleGroup>
       </div>
 
-      <div className="mt-6 space-y-4">
-        {items.slice(PAGE_SIZE * (page - 1), PAGE_SIZE * page).map((item) => (
-          <div
-            key={item.id}
-            className="flex items-center gap-4 rounded-lg border p-3"
-          >
-            <div className="bg-primary/10 flex h-9 w-9 items-center justify-center rounded-full">
-              <Image
-                urlEndpoint={process.env.NEXT_PUBLIC_IMAGEKIT_URL}
-                src={`/icons/${item.itemTypes[0]?.name}.png`}
-                height={50}
-                width={50}
-                alt={item.itemTypes[0]?.name ?? "item"}
-              />
-            </div>
-            <div className="flex-1 space-y-1">
-              <p className="text-sm leading-none font-medium">
-                {item.itemTypes[0]?.name}
-              </p>
-              <p className="text-muted-foreground text-xs">{item.name}</p>
-            </div>
-            <Badge
-              color={getBadgeColor(item.status)}
-              className="text-slate-900"
+      {isPending || isLoading ? (
+        <div className="mt-6 space-y-3">
+          {Array.from({ length: 9 }).map((_, i) => (
+            <div
+              key={i}
+              className="flex items-center gap-4 rounded-lg border p-3"
             >
-              {item.status.toLowerCase()}
-            </Badge>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => {
-                setItemToUpdate(item as unknown as UpdateItemSchemaType);
-                setIsItemOpen(true);
-              }}
-            >
-              Edit
-            </Button>
+              <div className="h-9 w-9 animate-pulse rounded-full bg-gray-200" />
+              <div className="flex-1 space-y-1">
+                <div className="h-4 w-1/3 animate-pulse rounded bg-gray-200" />
+                <div className="h-3 w-1/2 animate-pulse rounded bg-gray-200" />
+              </div>
+              <div className="h-8 w-12 animate-pulse rounded bg-gray-200" />
+            </div>
+          ))}
+        </div>
+      ) : (
+        <>
+          <div className="mt-6 space-y-4">
+            {items
+              .slice(PAGE_SIZE * (page - 1), PAGE_SIZE * page)
+              .map((item) => (
+                <div
+                  key={item.id}
+                  className="flex items-center gap-4 rounded-lg border p-3"
+                >
+                  <div className="bg-primary/10 flex h-9 w-9 items-center justify-center rounded-full">
+                    <Image
+                      urlEndpoint={process.env.NEXT_PUBLIC_IMAGEKIT_URL}
+                      src={`/icons/${item.itemTypes[0]?.name}.png`}
+                      height={50}
+                      width={50}
+                      alt={item.itemTypes[0]?.name ?? "item"}
+                    />
+                  </div>
+                  <div className="flex-1 space-y-1">
+                    <p className="text-sm leading-none font-medium">
+                      {item.itemTypes[0]?.name}
+                    </p>
+                    <p className="text-muted-foreground text-xs">{item.name}</p>
+                  </div>
+                  <Badge
+                    color={getBadgeColor(item.status)}
+                    className="text-slate-900"
+                  >
+                    {item.status.toLowerCase()}
+                  </Badge>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => {
+                      setItemToUpdate(item as unknown as UpdateItemSchemaType);
+                      setIsItemOpen(true);
+                    }}
+                  >
+                    Edit
+                  </Button>
+                </div>
+              ))}
           </div>
-        ))}
-      </div>
-      <DataPagination
-        currentPage={page}
-        totalItems={items.length}
-        pageSize={PAGE_SIZE}
-        onPageChange={setPage}
-        paginationWindow={PAGINATION_WINDOW}
-      />
-      <SimpleDialog
-        open={isItemOpen && !!itemToUpdate}
-        showCancel={false}
-        onOpenChange={() => setIsItemOpen(false)}
-        submitText="Update"
-        title="Update Item"
-        mobileView="bottom-drawer"
-      >
-        <ItemForm
-          defaultValues={itemToUpdate}
-          onSubmit={handleItemSubmit}
-          onCancel={() => setIsItemOpen(false)}
-        />
-      </SimpleDialog>
+          <DataPagination
+            currentPage={page}
+            totalItems={items.length}
+            pageSize={PAGE_SIZE}
+            onPageChange={setPage}
+            paginationWindow={PAGINATION_WINDOW}
+          />
+          <SimpleDialog
+            open={isItemOpen && !!itemToUpdate}
+            showCancel={false}
+            onOpenChange={() => setIsItemOpen(false)}
+            submitText="Update"
+            title="Update Item"
+            mobileView="bottom-drawer"
+            classNames={{
+              drawerContent: "dark:bg-zinc-900",
+            }}
+          >
+            <ItemForm
+              defaultValues={itemToUpdate}
+              onSubmit={handleItemSubmit}
+              onCancel={() => setIsItemOpen(false)}
+            />
+          </SimpleDialog>
+        </>
+      )}
     </Card>
   );
 };
