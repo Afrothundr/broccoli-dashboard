@@ -43,7 +43,7 @@ type PartialItem = Pick<
 
 export const ItemsTable: React.FC<ItemsTableProps> = ({ items, onCancel }) => {
   const [itemState, setItemState] = useState<Record<number, PartialItem>>({});
-  const { types: itemTypes } = useItemTypes();
+  const { allTypes: itemTypes } = useItemTypes();
   const { updateItem } = useItems();
 
   const columns: ColumnDef<PartialItem>[] = [

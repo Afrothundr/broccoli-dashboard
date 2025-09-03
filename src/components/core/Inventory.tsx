@@ -24,15 +24,15 @@ import { Badge } from "../ui/badge";
 function getItemStatusColor(status: ItemStatusType) {
   switch (status) {
     case ItemStatusType.BAD:
-      return "data-[state=on]:bg-red-400 px-4 data-[state=on]:dark:bg-red-400/20 dark:text-red-400";
+      return "data-[state=on]:bg-red-400 px-4 data-[state=on]:dark:bg-red-400/20 data-[state=on]:dark:text-red-400";
     case ItemStatusType.OLD:
-      return "data-[state=on]:bg-yellow-400 px-4 data-[state=on]:dark:bg-yellow-400/20 dark:text-yellow-400";
+      return "data-[state=on]:bg-yellow-400 px-4 data-[state=on]:dark:bg-yellow-400/20 data-[state=on]:dark:text-yellow-400";
     case ItemStatusType.FRESH:
-      return "data-[state=on]:bg-green-400 px-4 data-[state=on]:dark:bg-green-400/20 dark:text-green-400";
+      return "data-[state=on]:bg-green-400 px-4 data-[state=on]:dark:bg-green-400/20 data-[state=on]:dark:text-green-400";
     case ItemStatusType.EATEN:
-      return "data-[state=on]:bg-violet-400 px-4 data-[state=on]:dark:bg-violet-400/20 dark:text-violet-400";
+      return "data-[state=on]:bg-violet-400 px-4 data-[state=on]:dark:bg-violet-400/20 data-[state=on]:dark:text-violet-400";
     case ItemStatusType.DISCARDED:
-      return "data-[state=on]:bg-neutral-400 px-6 sm:text-ellipsis data-[state=on]:dark:bg-neutral-400/20 dark:text-neutral-400";
+      return "data-[state=on]:bg-neutral-400 px-6 sm:text-ellipsis data-[state=on]:dark:bg-neutral-400/20 data-[state=on]:dark:text-neutral-400";
   }
 }
 
@@ -112,7 +112,16 @@ export const Inventory = () => {
               aria-label={`Status: ${type}`}
               className={getItemStatusColor(type)}
             >
-              {type.toLowerCase()}
+              <div className="relative">
+                {filters.includes(type) && (
+                  <div className="absolute -top-[8px] -right-[20px] flex h-5 w-5 items-center justify-center rounded-full bg-gray-100 dark:bg-gray-700">
+                    <Badge color="gray" variant="ghost" size="xs">
+                      {items.filter((item) => item.status === type).length}
+                    </Badge>
+                  </div>
+                )}
+                {type.toLowerCase()}
+              </div>
             </ToggleGroupItem>
           ))}
         </ToggleGroup>
