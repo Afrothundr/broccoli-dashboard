@@ -18,7 +18,7 @@ import { useDebounce } from "use-debounce";
 import { ToggleGroup, ToggleGroupItem } from "../ui/toggle-group";
 import { SimpleDialog } from "../SimpleDialog";
 import type { UpdateItemSchemaType } from "@/schemas/update-item";
-import { ItemForm } from "./ItemForm";
+import { UpdateItemForm } from "./ItemForm";
 import { Badge } from "../ui/badge";
 
 function getItemStatusColor(status: ItemStatusType) {
@@ -173,7 +173,7 @@ export const Inventory = () => {
                       setIsItemOpen(true);
                     }}
                   >
-                    Edit
+                    Update
                   </Button>
                 </div>
               ))}
@@ -191,12 +191,23 @@ export const Inventory = () => {
             onOpenChange={() => setIsItemOpen(false)}
             submitText="Update"
             title="Update Item"
+            description={itemToUpdate?.name}
             mobileView="bottom-drawer"
             classNames={{
-              drawerContent: "dark:bg-zinc-900",
+              content: "max-w-[90vw]! sm:max-w-[400px]!",
             }}
+            badge={
+              <Badge
+                color={getBadgeColor(
+                  itemToUpdate?.status ?? ItemStatusType.FRESH,
+                )}
+                className="ml-2"
+              >
+                {itemToUpdate?.status?.toUpperCase()}
+              </Badge>
+            }
           >
-            <ItemForm
+            <UpdateItemForm
               defaultValues={itemToUpdate}
               onSubmit={handleItemSubmit}
               onCancel={() => setIsItemOpen(false)}

@@ -28,7 +28,7 @@ const config = {
         permanent: true,
       },
       {
-        source: "/inventory",
+        source: "/items",
         destination: "/",
         permanent: true,
       },
