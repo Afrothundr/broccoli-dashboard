@@ -8,16 +8,12 @@ import {
   DialogFooter,
   DialogPortal,
   DialogOverlay,
-  DialogClose,
   DialogDescription,
   DialogContent,
 } from "@/components/ui/dialog";
-import * as DialogPrimitive from "@radix-ui/react-dialog";
 import { useControlledOpen } from "@/hooks/useControlledOpen";
 import { useKitzeUI } from "@/components/KitzeUIContext";
-import { BottomDrawer } from "@/components/BottomDrawer";
 import { CustomButton } from "@/components/CustomButton";
-import { XIcon } from "lucide-react";
 import "@/styles/dialog.css";
 
 export type DialogMobileViewType = "keep" | "bottom-drawer";
@@ -65,6 +61,7 @@ export interface SimpleDialogProps {
   submitText?: string;
   cancelText?: string;
   description?: string;
+  badge?: React.ReactNode;
 }
 
 export const SimpleDialog = ({
@@ -83,6 +80,7 @@ export const SimpleDialog = ({
   onSubmit,
   submitText = "Submit",
   cancelText = "Cancel",
+  badge,
   description,
 }: SimpleDialogProps) => {
   const { isMobile } = useKitzeUI();
@@ -160,17 +158,27 @@ export const SimpleDialog = ({
       )}
       <DialogPortal>
         <DialogOverlay className="DialogOverlay" />
-        <DialogContent className="DialogContent dark:bg-zinc-900!">
+        <DialogContent
+          className={cn("DialogContent dark:bg-zinc-900!", classNames.content)}
+        >
           <DialogHeader
             className={cn("items-start space-y-1.5", classNames.header)}
           >
-            <DialogTitle className={cn(classNames.title, !title && "sr-only")}>
-              {title ?? "Dialog"}
-            </DialogTitle>
-            {description && (
-              <DialogDescription>{description}</DialogDescription>
-            )}
+            <div className="flex w-full items-center justify-between">
+              <div className="flex flex-col items-start gap-1">
+                <DialogTitle
+                  className={cn(classNames.title, !title && "sr-only")}
+                >
+                  {title ?? "Dialog"}
+                </DialogTitle>
+                {description && (
+                  <DialogDescription>{description}</DialogDescription>
+                )}
+              </div>
+              {badge && <div className="mr-6">{badge}</div>}
+            </div>
           </DialogHeader>
+          <hr></hr>
           <div className={cn("flex-1 space-y-4", classNames.body)}>
             {children}
           </div>
