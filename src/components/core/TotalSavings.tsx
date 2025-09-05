@@ -74,6 +74,15 @@ export const TotalSavings = () => {
   // Format the display value
   const displayValue = Number.isNaN(totalSavings) ? 0 : totalSavings;
 
+  console.log({
+    displayValue,
+    totalSavings,
+    actualWasteAmount,
+    actualWasteRate,
+    totalSpent,
+    totalWasted,
+  });
+
   if (isLoading || isPending) {
     return <MetricCardSkeleton />;
   }
