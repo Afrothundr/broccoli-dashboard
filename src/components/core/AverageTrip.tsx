@@ -97,9 +97,7 @@ export const AverageTrip = () => {
           ${data.length ? averageCostFormatted : 0}
         </div>{" "}
         {trips.length > 1 ? (
-          // @ts-expect-error - react-sparklines has type incompatibility with React 19
           <Sparklines data={data.map((trip) => trip.cost)} height={28}>
-            {/* @ts-expect-error - react-sparklines has type incompatibility with React 19 */}
             <SparklinesLine color="oklch(62.7% 0.194 149.214)" />
           </Sparklines>
         ) : null}
