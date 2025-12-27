@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { unstable_ViewTransition as ViewTransition } from "react";
 import { type Post } from "@/lib/posts";
 import { formatDate } from "@/lib/utils";
 
@@ -18,31 +17,36 @@ export function PostCard({ post }: PostCardProps) {
     <article className="group relative flex flex-col space-y-3">
       {post.image && (
         <Link href={`/blog/${post._meta.path}`}>
-          <ViewTransition name={imageTransitionName}>
-            <img
-              src={post.image}
-              alt={post.title}
-              className="bg-muted mb-2 aspect-video rounded-md border object-cover transition-colors"
-              loading="lazy"
-            />
-          </ViewTransition>
+          <img
+            src={post.image}
+            alt={post.title}
+            className="bg-muted mb-2 aspect-video rounded-md border object-cover transition-colors"
+            loading="lazy"
+            style={{ viewTransitionName: imageTransitionName }}
+          />
         </Link>
       )}
-      <ViewTransition name={titleTransitionName}>
-        <h2 className="text-xl font-semibold tracking-tight">
-          <Link href={`/blog/${post._meta.path}`}>{post.title}</Link>
-        </h2>
-      </ViewTransition>
+      <h2
+        className="text-xl font-semibold tracking-tight"
+        style={{ viewTransitionName: titleTransitionName }}
+      >
+        <Link href={`/blog/${post._meta.path}`}>{post.title}</Link>
+      </h2>
       {post.description && (
-        <ViewTransition name={descriptionTransitionName}>
-          <p className="text-muted-foreground">{post.description}</p>
-        </ViewTransition>
+        <p
+          className="text-muted-foreground"
+          style={{ viewTransitionName: descriptionTransitionName }}
+        >
+          {post.description}
+        </p>
       )}
-      <ViewTransition name={dateTransitionName}>
-        <time dateTime={post.date} className="text-muted-foreground text-sm">
-          {formatDate(post.date)}
-        </time>
-      </ViewTransition>
+      <time
+        dateTime={post.date}
+        className="text-muted-foreground text-sm"
+        style={{ viewTransitionName: dateTransitionName }}
+      >
+        {formatDate(post.date)}
+      </time>
     </article>
   );
 }

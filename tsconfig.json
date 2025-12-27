@@ -10,17 +10,29 @@
     "strict": true,
     "noUncheckedIndexedAccess": true,
     "checkJs": false,
-    "lib": ["dom", "dom.iterable", "ES2022"],
+    "lib": [
+      "dom",
+      "dom.iterable",
+      "ES2022"
+    ],
     "noEmit": true,
     "module": "ESNext",
     "moduleResolution": "Bundler",
-    "jsx": "preserve",
-    "plugins": [{ "name": "next" }],
+    "jsx": "react-jsx",
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ],
     "incremental": true,
     "baseUrl": ".",
     "paths": {
-      "@/*": ["./src/*"],
-      "content-collections": ["./.content-collections/generated"]
+      "@/*": [
+        "./src/*"
+      ],
+      "content-collections": [
+        "./.content-collections/generated"
+      ]
     }
   },
   "include": [
@@ -31,7 +43,10 @@
     "**/*.cjs",
     "**/*.js",
     ".next/types/**/*.ts",
-    ".content-collections/generated"
+    ".content-collections/generated",
+    ".next/dev/types/**/*.ts"
   ],
-  "exclude": ["node_modules"]
+  "exclude": [
+    "node_modules"
+  ]
 }
