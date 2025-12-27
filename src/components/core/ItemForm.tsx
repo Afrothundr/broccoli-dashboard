@@ -208,9 +208,10 @@ export const ItemForm = ({
         <div className="mt-6 flex justify-center gap-3">
           <Button
             type="button"
-            variant="outline"
+            variant="secondary"
             onClick={onCancel}
             disabled={isLoading}
+            className="grow-2"
           >
             {isLoading && <Spinner />}
             {isImport ? "Skip" : "Cancel"}
@@ -219,6 +220,7 @@ export const ItemForm = ({
             type="submit"
             variant={isImport ? "outline" : "default"}
             disabled={isLoading}
+            className="grow-2"
           >
             {isLoading && <Spinner />}
             {isImport ? "Import" : "Update"}

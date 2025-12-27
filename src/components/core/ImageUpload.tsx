@@ -7,7 +7,7 @@ import pRetry from "p-retry";
 import { PlusCircle } from "lucide-react";
 import { toast } from "sonner";
 import { UploadButton, UploadDropzone } from "@/server/uploadthing/uploadthing";
-import type { GroceryTrip } from "@/generated/prisma";
+
 import { processImageQueue } from "@/app/api/queue/processImageQueue";
 import { useGroceryTrips } from "@/hooks/useGroceryTrips";
 
@@ -20,14 +20,19 @@ export const ImageUpload = ({
   style = "button",
 }: {
   groceryTripId?: number;
-  refetch?: () => void;
-  checkReceiptStatus?: () => unknown;
+  refetch?: () => Promise<void> | void;
+  checkReceiptStatus?: () => Promise<boolean> | boolean;
   onSuccess?: () => void;
   onError?: () => void;
   style?: "button" | "dropzone" | "floating";
   label?: string;
 }) => {
-  const { createReceipt, createTrip } = useGroceryTrips();
+  const {
+    createReceipt,
+    createTrip,
+    trips,
+    refetch: refetchTrips,
+  } = useGroceryTrips();
   const router = useRouter();
 
   const Component = (() => {
@@ -130,34 +135,129 @@ export const ImageUpload = ({
       }}
       onClientUploadComplete={async (res) => {
         if (res.length < 1) return;
-        let fallbackGroceryTrip: GroceryTrip | undefined = {
-          id: 0,
-        } as unknown as GroceryTrip;
-        if (!groceryTripId) {
-          fallbackGroceryTrip = await createTrip({
-            name: `${dayjs().format("dddd")} grocery trip`,
-          });
-        }
-        res?.forEach(async (image, index) => {
-          const receipt = await createReceipt({
-            url: image.url,
-            groceryTripId: groceryTripId || fallbackGroceryTrip?.id || 0,
-          });
-          await processImageQueue({
-            receiptId: receipt?.id || 0,
-            url: image.ufsUrl,
-          });
-          if (res.length === index + 1) {
-            await refetch?.();
-            if (checkReceiptStatus)
-              await pRetry(checkReceiptStatus, { factor: 3 });
-            onSuccess?.();
-          }
-        });
 
-        toast.success("File(s) uploaded!");
-        if (style === "floating") {
-          await router.push("#");
+        try {
+          // Step 1: Create or get grocery trip
+          let tripId = groceryTripId;
+          if (!tripId) {
+            const fallbackGroceryTrip = await createTrip({
+              name: `${dayjs().format("dddd")} grocery trip`,
+            });
+            tripId = fallbackGroceryTrip?.id || 0;
+          }
+
+          // Step 2: Create receipts and queue them for processing
+          const receiptIds: number[] = [];
+          for (const image of res) {
+            const receipt = await createReceipt({
+              url: image.url,
+              groceryTripId: tripId,
+            });
+            receiptIds.push(receipt?.id || 0);
+            await processImageQueue({
+              receiptId: receipt?.id || 0,
+              url: image.ufsUrl,
+            });
+          }
+
+          console.log(
+            `Created ${receiptIds.length} receipts, starting polling...`,
+          );
+
+          // Step 3: Poll for receipt status changes
+          const pollReceiptStatus = async (): Promise<boolean> => {
+            // Refetch both the global trips data and the specific trip/gallery data
+            await Promise.all([refetchTrips?.(), refetch?.()]);
+
+            // Find the current trip in the updated trips data
+            const currentTrip = trips.find((t) => t.id === tripId);
+
+            if (!currentTrip) {
+              console.warn("Trip not found after refetch");
+              return false;
+            }
+
+            // Check if all our receipts are done processing
+            const ourReceipts = currentTrip.receipts.filter((r) =>
+              receiptIds.includes(r.id),
+            );
+
+            const allDone = ourReceipts.every(
+              (receipt) => receipt.status !== "PROCESSING",
+            );
+
+            const processingCount = ourReceipts.filter(
+              (r) => r.status === "PROCESSING",
+            ).length;
+            const importedCount = ourReceipts.filter(
+              (r) => r.status === "IMPORTED",
+            ).length;
+            const errorCount = ourReceipts.filter(
+              (r) => r.status === "ERROR",
+            ).length;
+
+            console.log(
+              `Receipt status: ${processingCount} processing, ${importedCount} imported, ${errorCount} errors`,
+            );
+
+            return allDone;
+          };
+
+          // Step 4: Use pRetry to poll with exponential backoff
+          await pRetry(
+            async () => {
+              const isReady = await pollReceiptStatus();
+
+              if (!isReady) {
+                throw new Error("Receipts still processing");
+              }
+
+              // Also call the custom status check if provided
+              if (checkReceiptStatus) {
+                const customCheckPassed = await checkReceiptStatus();
+                if (!customCheckPassed) {
+                  throw new Error("Custom status check failed");
+                }
+              }
+            },
+            {
+              retries: 15,
+              factor: 2,
+              minTimeout: 1000,
+              maxTimeout: 20000,
+              onFailedAttempt: (error) => {
+                console.log(
+                  `Polling attempt ${error.attemptNumber} failed. ${error.retriesLeft} retries left.`,
+                );
+              },
+            },
+          );
+
+          console.log("All receipts processed successfully!");
+
+          // Step 5: Final refetch to ensure UI is in sync
+          await Promise.all([refetchTrips?.(), refetch?.()]);
+
+          onSuccess?.();
+          toast.success("File(s) uploaded and processed!");
+
+          if (style === "floating") {
+            router.push("#");
+          }
+        } catch (error) {
+          console.error("Error during upload completion:", error);
+          onError?.();
+
+          if (
+            error instanceof Error &&
+            error.message.includes("still processing")
+          ) {
+            toast.error(
+              "Receipt processing timed out. Please refresh to see the latest status.",
+            );
+          } else {
+            toast.error("There was a problem processing your upload");
+          }
         }
       }}
       onUploadError={(error: Error) => {
