@@ -196,7 +196,6 @@ export const ItemsTable: React.FC<ItemsTableProps> = ({ items, onCancel }) => {
 
   return (
     <div className="flex flex-col gap-2">
-      <p className="text-md mb-3 leading-none font-semibold">Items</p>
       <div className="rounded-md border">
         <Table>
           <TableHeader>
@@ -248,10 +247,7 @@ export const ItemsTable: React.FC<ItemsTableProps> = ({ items, onCancel }) => {
         </Table>
       </div>
       <div className="mt-6 mb-4 flex justify-end gap-3">
-        <Button variant="outline" onClick={onCancel}>
-          Cancel
-        </Button>
-        <Button onClick={onSave}>Save and Close</Button>
+        <Button onClick={onSave}>Save Changes</Button>
       </div>
     </div>
   );

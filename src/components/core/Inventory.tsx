@@ -105,25 +105,26 @@ export const Inventory = () => {
             setPage(1);
           }}
         >
-          {Object.values(ItemStatusType).map((type) => (
-            <ToggleGroupItem
-              key={type}
-              value={type}
-              aria-label={`Status: ${type}`}
-              className={getItemStatusColor(type)}
-            >
-              <div className="relative">
-                {filters.includes(type) && (
-                  <div className="absolute -top-[8px] -right-[20px] flex h-5 w-5 items-center justify-center rounded-full bg-gray-100 dark:bg-gray-700">
-                    <Badge color="gray" variant="ghost" size="xs">
-                      {items.filter((item) => item.status === type).length}
-                    </Badge>
-                  </div>
-                )}
-                {type.toLowerCase()}
-              </div>
-            </ToggleGroupItem>
-          ))}
+          {Object.values(ItemStatusType).map((type) => {
+            const count = items.filter((item) => item.status === type).length;
+            return (
+              <ToggleGroupItem
+                key={type}
+                value={type}
+                aria-label={`Status: ${type}`}
+                className={getItemStatusColor(type)}
+              >
+                <span className="flex items-center gap-1.5">
+                  {type.toLowerCase()}
+                  {filters.includes(type) && count > 0 && (
+                    <span className="inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-black/10 px-1.5 text-xs font-semibold tabular-nums dark:bg-white/20">
+                      {count}
+                    </span>
+                  )}
+                </span>
+              </ToggleGroupItem>
+            );
+          })}
         </ToggleGroup>
       </div>
 

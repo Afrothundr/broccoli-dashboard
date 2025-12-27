@@ -1,4 +1,5 @@
 "use client";
+import { useEffect, useRef } from "react";
 import Image from "next/image";
 import type { Receipt } from "@/generated/prisma";
 import { ImageUpload } from "./ImageUpload";
@@ -32,6 +33,7 @@ interface ReceiptGalleryProps {
   handleReceiptClick: (index: number) => void;
   activeReceipt?: number;
   refetchTrip: () => void;
+  getReceipts?: () => Receipt[];
 }
 
 export const ReceiptGallery: React.FC<ReceiptGalleryProps> = ({
@@ -40,10 +42,48 @@ export const ReceiptGallery: React.FC<ReceiptGalleryProps> = ({
   handleReceiptClick,
   activeReceipt,
   refetchTrip,
+  getReceipts,
 }) => {
+  const pollingIntervalRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Create a status check function that returns true when all receipts are done processing
+  const checkReceiptStatus = () => {
+    const currentReceipts = getReceipts ? getReceipts() : receipts;
+    const hasProcessingReceipts = currentReceipts.some(
+      (receipt) => receipt.status === "PROCESSING",
+    );
+    return !hasProcessingReceipts;
+  };
+
+  // Poll for updates when receipts are processing
+  useEffect(() => {
+    const hasProcessingReceipts = receipts.some(
+      (receipt) => receipt.status === "PROCESSING",
+    );
+
+    if (hasProcessingReceipts) {
+      // Start polling every 3 seconds
+      pollingIntervalRef.current = setInterval(() => {
+        refetchTrip();
+      }, 3000);
+    } else {
+      // Stop polling when all receipts are in terminal status
+      if (pollingIntervalRef.current) {
+        clearInterval(pollingIntervalRef.current);
+        pollingIntervalRef.current = null;
+      }
+    }
+
+    // Cleanup on unmount
+    return () => {
+      if (pollingIntervalRef.current) {
+        clearInterval(pollingIntervalRef.current);
+      }
+    };
+  }, [receipts, refetchTrip]);
+
   return (
     <div className="mb-4 flex flex-col gap-2">
-      <p className="text-md leading-none font-semibold">Receipts</p>
       <div className="flex gap-3">
         {receipts.map((receipt, index) => {
           const classes = cn(
@@ -56,11 +96,16 @@ export const ReceiptGallery: React.FC<ReceiptGalleryProps> = ({
           // Render based on receipt status
           if (receipt.status === "PROCESSING") {
             return (
-              <div
-                key={receipt.id}
-                className={cn(classes, "border-2 border-gray-300 bg-gray-100")}
-              >
-                <Spinner size="sm" className="text-gray-500" />
+              <div className="row flex items-center gap-2" key={receipt.id}>
+                <div
+                  className={cn(
+                    classes,
+                    "border-2 border-gray-300 bg-gray-100",
+                  )}
+                >
+                  <Spinner size="sm" className="text-gray-500" />
+                </div>
+                <p className="">Processing image please wait...</p>
               </div>
             );
           }
@@ -98,6 +143,7 @@ export const ReceiptGallery: React.FC<ReceiptGalleryProps> = ({
           style="button"
           groceryTripId={tripId}
           refetch={refetchTrip}
+          checkReceiptStatus={checkReceiptStatus}
         />
       </div>
     </div>
