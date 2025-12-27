@@ -5,7 +5,6 @@ import { Mdx } from "@/components/blog/MdxComponents";
 import Link from "next/link";
 import { type Metadata } from "next";
 import { ArrowLeft } from "lucide-react";
-import { unstable_ViewTransition as ViewTransition } from "react";
 
 interface PostPageProps {
   params: { slug: string };
@@ -66,9 +65,12 @@ export default async function PostPage({ params }: PromisePostPageProps) {
 
       <div className="space-y-4">
         <div className="text-muted-foreground flex items-center gap-2 text-sm">
-          <ViewTransition name={dateTransitionName}>
-            <time dateTime={post.date}>{formatDate(post.date)}</time>
-          </ViewTransition>
+          <time
+            dateTime={post.date}
+            style={{ viewTransitionName: dateTransitionName }}
+          >
+            {formatDate(post.date)}
+          </time>
           {post.tags && post.tags.length > 0 && (
             <>
               <span>•</span>
@@ -86,30 +88,33 @@ export default async function PostPage({ params }: PromisePostPageProps) {
           )}
         </div>
 
-        <ViewTransition name={titleTransitionName}>
-          <h1 className="font-heading from-foreground to-foreground/70 bg-gradient-to-r bg-clip-text text-4xl leading-tight font-bold text-transparent lg:text-5xl">
-            {post.title}
-          </h1>
-        </ViewTransition>
+        <h1
+          className="font-heading from-foreground to-foreground/70 bg-gradient-to-r bg-clip-text text-4xl leading-tight font-bold text-transparent lg:text-5xl"
+          style={{ viewTransitionName: titleTransitionName }}
+        >
+          {post.title}
+        </h1>
 
         {post.description && (
-          <ViewTransition name={descriptionTransitionName}>
-            <p className="text-muted-foreground text-xl">{post.description}</p>
-          </ViewTransition>
+          <p
+            className="text-muted-foreground text-xl"
+            style={{ viewTransitionName: descriptionTransitionName }}
+          >
+            {post.description}
+          </p>
         )}
       </div>
 
       {post.image && (
         <div className="my-8">
-          <ViewTransition name={imageTransitionName}>
-            <img
-              src={post.image}
-              alt={post.title}
-              className="bg-muted aspect-video w-full rounded-md border object-cover transition-colors"
-              loading="eager"
-              fetchPriority="high"
-            />
-          </ViewTransition>
+          <img
+            src={post.image}
+            alt={post.title}
+            className="bg-muted aspect-video w-full rounded-md border object-cover transition-colors"
+            loading="eager"
+            fetchPriority="high"
+            style={{ viewTransitionName: imageTransitionName }}
+          />
         </div>
       )}
 
