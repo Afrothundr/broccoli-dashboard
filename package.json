@@ -6,7 +6,7 @@
   "scripts": {
     "type-check": "tsc",
     "dev": "next dev --turbo",
-    "build": "pnpm db:deploy && pnpm db:seed && next build",
+    "build": "pnpm db:deploy && pnpm db:seed && next build --webpack",
     "build:turbo": "npx prisma migrate deploy && npx prisma generate && next build --turbo",
     "db:generate": "prisma generate",
     "db:studio": "prisma studio",
@@ -37,6 +37,7 @@
     "@content-collections/next": "0.2.6",
     "@dicebear/collection": "^9.2.2",
     "@dicebear/core": "^9.2.2",
+    "@ducanh2912/next-pwa": "^10.2.9",
     "@formkit/auto-animate": "^0.8.2",
     "@hookform/resolvers": "^5.0.1",
     "@imagekit/next": "^2.1.2",
