@@ -44,6 +44,8 @@ model User {
   groceryTrips   GroceryTrip[]
   items          Item[]
   reminders      Reminder[]
+  notifications  Notification[]
+  pushSubscriptions PushSubscription[]
 
   // better-auth-admin
   role       String    @default("user")
@@ -140,6 +142,7 @@ model Item {
   user            User           @relation(fields: [userId], references: [id], onDelete: Cascade)
   reminders       Reminder[]
   itemTypes       ItemType[]
+  notifications   Notification[]
 }
 
 model ItemType {
@@ -188,8 +191,49 @@ model Reminder {
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
+model Notification {
+  id        Int              @id @default(autoincrement())
+  createdAt DateTime         @default(now())
+  updatedAt DateTime         @updatedAt
+  userId    String
+  user      User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  itemId    Int?
+  item      Item?            @relation(fields: [itemId], references: [id], onDelete: Cascade)
+  type      NotificationType
+  title     String
+  message   String
+  read      Boolean          @default(false)
+  readAt    DateTime?
+  metadata  Json?
+
+  @@index([userId, read])
+  @@index([createdAt])
+  @@map("notifications")
+}
+
+model PushSubscription {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  endpoint  String   @unique
+  p256dh    String
+  auth      String
+
+  @@index([userId])
+  @@map("push_subscriptions")
+}
+
 enum TokenType {
   RESET_PASSWORD
+}
+
+enum NotificationType {
+  ITEM_EXPIRING
+  ITEM_EXPIRED
+  ITEM_STATUS_CHANGED
+  SYSTEM
 }
 
 enum ItemStatusType {

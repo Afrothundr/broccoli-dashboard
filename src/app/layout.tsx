@@ -17,11 +17,21 @@ import { hotkeys } from "@/config/hotkeys";
 import { NuqsAdapter } from "nuqs/adapters/next/app";
 import { APP_NAME, APP_DESCRIPTION } from "@/config/config";
 import { LevaPanel } from "@/components/dev/LevaPanel";
+import { PushNotificationProvider } from "@/components/PushNotificationProvider";
 
 export const metadata: Metadata = {
   title: APP_NAME,
   description: APP_DESCRIPTION,
   icons: [{ rel: "icon", url: "/favicon.ico" }],
+  manifest: "/manifest.json",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "default",
+    title: APP_NAME,
+  },
+  formatDetection: {
+    telephone: false,
+  },
 };
 
 // you can use this instead of <ThemeColorUpdater/>  if you want it to be set based on the OS system settings
@@ -44,6 +54,10 @@ export default async function RootLayout({
     >
       <head>
         <meta name="apple-mobile-web-app-title" content={APP_NAME} />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+        <meta name="mobile-web-app-capable" content="yes" />
+        <link rel="apple-touch-icon" href="/web-app-manifest-192x192.png" />
       </head>
       <body className="vertical min-h-screen">
         <NuqsAdapter>
@@ -51,13 +65,15 @@ export default async function RootLayout({
             <ThemeWrapper>
               <MediaQueriesProvider>
                 <KitzeUIProviders>
-                  <ErrorBoundary FallbackComponent={RootErrorFallback}>
-                    <Suspense fallback={<FullPageSpinner />}>
-                      {children}
-                    </Suspense>
-                  </ErrorBoundary>
-                  <RegisterHotkeys hotkeys={hotkeys} />
-                  <Toaster />
+                  <PushNotificationProvider>
+                    <ErrorBoundary FallbackComponent={RootErrorFallback}>
+                      <Suspense fallback={<FullPageSpinner />}>
+                        {children}
+                      </Suspense>
+                    </ErrorBoundary>
+                    <RegisterHotkeys hotkeys={hotkeys} />
+                    <Toaster />
+                  </PushNotificationProvider>
                 </KitzeUIProviders>
               </MediaQueriesProvider>
             </ThemeWrapper>

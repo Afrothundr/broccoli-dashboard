@@ -1,4 +1,5 @@
 import { withContentCollections } from "@content-collections/next";
+import withPWAInit from "@ducanh2912/next-pwa";
 
 const derivedUrl =
   (process.env.VERCEL_URL && `https://${process.env.VERCEL_URL}`) ||
@@ -14,6 +15,19 @@ if (process.env.NODE_ENV === "production") {
   console.log("Derived server URL → ", derivedUrl);
   console.log("SERVER_URL → ", serverUrl);
 }
+
+const withPWA = withPWAInit({
+  dest: "public",
+  disable: process.env.NODE_ENV === "development",
+  register: true,
+  skipWaiting: true,
+  sw: "sw.js",
+  cacheOnNavigation: true,
+  reloadOnOnline: true,
+  fallbacks: {
+    document: "/offline",
+  },
+});
 
 /** @type {import("next").NextConfig} */
 const config = {
@@ -45,8 +59,6 @@ const config = {
       {
         protocol: "https",
         hostname: "utfs.io",
-        port: "",
-        pathname: "/f/**", // Allow images from the /f/ path on utfs.io
       },
     ],
   },
@@ -56,4 +68,11 @@ const config = {
   },
 };
 
-export default withContentCollections(config);
+// Apply wrappers with explicit images config preservation
+const wrappedConfig = withContentCollections(config);
+const finalConfig = withPWA(wrappedConfig);
+
+// Explicitly preserve images config (PWA wrapper can override it)
+finalConfig.images = config.images;
+
+export default finalConfig;

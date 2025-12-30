@@ -4,6 +4,8 @@ import { zStringToBool, zTrue, zFalse } from "./utils";
 const redisServerSchemaBase = z.object({
   REDIS_HOST: z.string().optional(),
   REDIS_PORT: z.coerce.number().optional(),
+  REDIS_USERNAME: z.string().optional(),
+  REDIS_PASSWORD: z.string().optional(),
 });
 
 export const clientSchema = z.object({
@@ -21,6 +23,8 @@ export const serverSchema = z.intersection(
           .string()
           .nonempty("REDIS_HOST must be set when background jobs are enabled."),
         REDIS_PORT: z.coerce.number(),
+        REDIS_USERNAME: z.string().optional(),
+        REDIS_PASSWORD: z.string().optional(),
       }),
     ),
     // Case 2: Background jobs DISABLED

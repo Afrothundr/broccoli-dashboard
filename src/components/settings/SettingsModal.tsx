@@ -8,6 +8,7 @@ import {
   Cpu,
   CreditCard,
   Lock,
+  Bell,
 } from "lucide-react";
 import { TabPanels } from "@/components/TabPanels";
 import { SettingsTabGeneral } from "./SettingsTabGeneral";
@@ -16,6 +17,7 @@ import { SettingsTabShortcuts } from "./SettingsTabShortcuts";
 import { SettingsTabAI } from "./SettingsTabAI/SettingsTabAI";
 import { SettingsTabBilling } from "./SettingsTabBilling";
 import { SettingsTabPasswordChange } from "./SettingsTabPasswordChange";
+import { SettingsTabNotifications } from "./SettingsTabNotifications";
 import { clientEnv } from "@/env/client";
 import { compact } from "lodash";
 
@@ -31,6 +33,12 @@ export function SettingsModal({}: SettingsModalProps) {
       label: "General",
       icon: Settings,
       content: <SettingsTabGeneral />,
+    },
+    {
+      value: "notifications",
+      label: "Notifications",
+      icon: Bell,
+      content: <SettingsTabNotifications />,
     },
     {
       value: "appearance",

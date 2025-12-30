@@ -8,17 +8,21 @@ import { groceryTripRouter } from "./routers/groceryTrip";
 import { itemTypeRouter } from "./routers/itemType";
 import { itemRouter } from "./routers/item";
 import { receiptRouter } from "./routers/receipt";
+import { notificationRouter } from "./routers/notification";
+import { pushSubscriptionRouter } from "./routers/push-subscription";
 
 export const appRouter = createTRPCRouter({
-	user: userRouter,
-	utImage: utImageRouter,
-	polar: polarRouter,
-	auth: authRouter,
-	admin: adminRouter,
-	groceryTrip: groceryTripRouter,
-	itemType: itemTypeRouter,
-	item: itemRouter,
-	receipt: receiptRouter,
+  user: userRouter,
+  utImage: utImageRouter,
+  polar: polarRouter,
+  auth: authRouter,
+  admin: adminRouter,
+  groceryTrip: groceryTripRouter,
+  itemType: itemTypeRouter,
+  item: itemRouter,
+  receipt: receiptRouter,
+  notification: notificationRouter,
+  pushSubscription: pushSubscriptionRouter,
 });
 
 export type AppRouter = typeof appRouter;
