@@ -6,6 +6,7 @@ import * as generalSchemas from "./general";
 import * as polarSchemas from "./polar";
 import * as uploadThingSchemas from "./uploadthing";
 import * as redisSchemas from "./redis";
+import * as vapidSchemas from "./vapid";
 
 export const clientSchema = z
   .object({})
@@ -59,6 +60,7 @@ export const serverSchema = clientSchema
   .and(polarSchemas.serverSchema)
   .and(uploadThingSchemas.serverSchema)
   .and(redisSchemas.serverSchema)
+  .and(vapidSchemas.serverSchema)
   // 1a. Email Verification Check (Production)
   .refine(
     (env) => {

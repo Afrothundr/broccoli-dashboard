@@ -17,6 +17,7 @@ import { hotkeys } from "@/config/hotkeys";
 import { NuqsAdapter } from "nuqs/adapters/next/app";
 import { APP_NAME, APP_DESCRIPTION } from "@/config/config";
 import { LevaPanel } from "@/components/dev/LevaPanel";
+import { PushNotificationProvider } from "@/components/PushNotificationProvider";
 
 export const metadata: Metadata = {
   title: APP_NAME,
@@ -64,13 +65,15 @@ export default async function RootLayout({
             <ThemeWrapper>
               <MediaQueriesProvider>
                 <KitzeUIProviders>
-                  <ErrorBoundary FallbackComponent={RootErrorFallback}>
-                    <Suspense fallback={<FullPageSpinner />}>
-                      {children}
-                    </Suspense>
-                  </ErrorBoundary>
-                  <RegisterHotkeys hotkeys={hotkeys} />
-                  <Toaster />
+                  <PushNotificationProvider>
+                    <ErrorBoundary FallbackComponent={RootErrorFallback}>
+                      <Suspense fallback={<FullPageSpinner />}>
+                        {children}
+                      </Suspense>
+                    </ErrorBoundary>
+                    <RegisterHotkeys hotkeys={hotkeys} />
+                    <Toaster />
+                  </PushNotificationProvider>
                 </KitzeUIProviders>
               </MediaQueriesProvider>
             </ThemeWrapper>

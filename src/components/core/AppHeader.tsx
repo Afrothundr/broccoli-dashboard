@@ -7,6 +7,7 @@ import { useKitzeUI } from "@/components/KitzeUIContext";
 import { ThemeSwitchMinimalNextThemes } from "@/components/ThemeSwitchMinimalNextThemes";
 import { HeaderCustomized } from "@/components/core/HeaderCustomized";
 import { HeaderLinks } from "@/components/core/HeaderLinks";
+import { NotificationBell } from "@/components/NotificationBell";
 
 export default function AppHeader() {
   const { isMobile } = useKitzeUI();
@@ -29,6 +30,7 @@ export default function AppHeader() {
         <div className="horizontal center-v gap-4">
           {!isMobile && <HeaderLinks links={headerLinks} />}
           <ThemeSwitchMinimalNextThemes buttonProps={{ variant: "ghost" }} />
+          <NotificationBell />
           <AppHeaderUser links={userLinks} />
         </div>
       )}

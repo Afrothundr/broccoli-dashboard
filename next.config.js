@@ -34,7 +34,6 @@ const config = {
   experimental: {
     viewTransition: true,
   },
-  turbopack: {},
   async redirects() {
     return [
       {
@@ -60,8 +59,6 @@ const config = {
       {
         protocol: "https",
         hostname: "utfs.io",
-        port: "",
-        pathname: "/f/**", // Allow images from the /f/ path on utfs.io
       },
     ],
   },
@@ -71,4 +68,11 @@ const config = {
   },
 };
 
-export default withPWA(withContentCollections(config));
+// Apply wrappers with explicit images config preservation
+const wrappedConfig = withContentCollections(config);
+const finalConfig = withPWA(wrappedConfig);
+
+// Explicitly preserve images config (PWA wrapper can override it)
+finalConfig.images = config.images;
+
+export default finalConfig;
