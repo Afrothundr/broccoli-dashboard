@@ -5,6 +5,8 @@ export const bullConnection = new Redis({
   host: serverEnv.REDIS_HOST,
   port: serverEnv.REDIS_PORT,
   maxRetriesPerRequest: null,
+  ...(serverEnv.REDIS_USERNAME && { username: serverEnv.REDIS_USERNAME }),
+  ...(serverEnv.REDIS_PASSWORD && { password: serverEnv.REDIS_PASSWORD }),
 });
 
 bullConnection.on("connect", () => {
