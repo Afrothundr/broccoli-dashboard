@@ -1,0 +1,1 @@
+(()=>{"use strict";importScripts("/sw-push.js"),console.log("[Service Worker] Custom worker with push notification support loaded.")})();

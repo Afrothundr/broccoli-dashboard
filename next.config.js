@@ -22,6 +22,7 @@ const withPWA = withPWAInit({
   register: true,
   skipWaiting: true,
   sw: "sw.js",
+  swSrc: "worker/index.js", // Use custom service worker source with push notification support
   cacheOnNavigation: true,
   reloadOnOnline: true,
   fallbacks: {
