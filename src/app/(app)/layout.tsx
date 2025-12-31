@@ -11,6 +11,7 @@ import { APP_NAME } from "@/config/config";
 import { userHotkeys } from "@/config/hotkeys";
 import { useCurrentUser } from "@/hooks/useCurrentUser";
 import { useIsImpersonating } from "@/hooks/useIsImpersonating";
+import { PWAInstallPrompt } from "@/components/PWAInstallPrompt";
 
 // Define steps for onboarding
 const onboardingSteps: OnboardingStep[] = [
@@ -52,6 +53,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
       <RegisterHotkeys hotkeys={userHotkeys} />
       <CommandPalette />
       {false && <BeautifulOnboarder steps={onboardingSteps} />}
+      <PWAInstallPrompt />
       {children}
       <Toaster />
     </>
