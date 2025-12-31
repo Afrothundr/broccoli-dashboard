@@ -31,6 +31,7 @@ const withPWA = withPWAInit({
 
 /** @type {import("next").NextConfig} */
 const config = {
+  output: "standalone",
   experimental: {
     viewTransition: true,
   },
