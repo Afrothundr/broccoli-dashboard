@@ -77,4 +77,10 @@ const finalConfig = withPWA(wrappedConfig);
 // Explicitly preserve images config (PWA wrapper can override it)
 finalConfig.images = config.images;
 
+// Explicitly preserve experimental config (wrappers might override it)
+finalConfig.experimental = {
+  ...finalConfig.experimental,
+  ...config.experimental,
+};
+
 export default finalConfig;

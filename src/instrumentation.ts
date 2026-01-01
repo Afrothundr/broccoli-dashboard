@@ -5,6 +5,11 @@ import { logEnvConfigStatus } from "@/server/instrumentation/envLogger";
  * which is highly recommended.
  */
 export async function register() {
+  console.log(
+    "🚀 [INSTRUMENTATION] register() called - Runtime:",
+    process.env.NEXT_RUNTIME,
+  );
+
   const { serverEnv } = await import("@/env");
   await import("@/env/client");
 
@@ -17,13 +22,13 @@ export async function register() {
 
     if (serverEnv.NEXT_PUBLIC_ENABLE_CRON === true) {
       const { startMainCron } =
-        await require("./src/server/instrumentation/cron/scripts/main-cron");
+        await require("./server/instrumentation/cron/scripts/main-cron");
       startMainCron();
     }
 
     if (serverEnv.NEXT_PUBLIC_ENABLE_BACKGROUND_JOBS) {
       const { startWorker } =
-        await require("./src/server/instrumentation/bull/worker");
+        await require("./server/instrumentation/bull/worker");
       console.log("🔄 Redis worker starting...");
       startWorker();
     }
