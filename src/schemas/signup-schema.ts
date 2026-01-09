@@ -1,12 +1,12 @@
 import { object, type z } from "zod";
 import {
   getEmailSchema,
-  getNameSchema,
+  getUserNameSchema,
   getPasswordSchema,
 } from "./shared-schemas";
 
 export const signUpSchema = object({
-  name: getNameSchema(),
+  name: getUserNameSchema(),
   email: getEmailSchema(),
   password: getPasswordSchema("password"),
 });
