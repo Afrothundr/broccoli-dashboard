@@ -23,3 +23,21 @@ export const getNameSchema = (): z.ZodString =>
   string({ required_error: "Name is required" })
     .min(1, "Name is required")
     .max(50, "Name must be less than 50 characters");
+
+export const getUserNameSchema = () =>
+  string({ required_error: "Name is required" })
+    .min(1, "Name is required")
+    .max(50, "Name must be less than 50 characters")
+    .refine(
+      (name) => {
+        // Trim and check if name has at least two words (first and last name)
+        const trimmedName = name.trim();
+        const nameParts = trimmedName.split(/\s+/);
+        return (
+          nameParts.length >= 2 && nameParts.every((part) => part.length > 0)
+        );
+      },
+      {
+        message: "Please enter both first and last name",
+      },
+    );
