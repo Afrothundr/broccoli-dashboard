@@ -272,7 +272,7 @@ export const UpdateItemForm = ({
       status: defaultValues?.status ?? ItemStatusType.FRESH,
     },
   });
-  const { reset, setValue } = form;
+  const { reset, setValue, watch } = form;
   useEffect(() => {
     if (defaultValues) {
       reset({
@@ -308,125 +308,124 @@ export const UpdateItemForm = ({
 
   return (
     <FormProvider {...form}>
-      <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-2">
-        <div className="space-y-3">
-          <label className="text-sm font-medium dark:text-gray-300">
-            Status
-          </label>
-          <div className="mb-3 grid grid-cols-1 gap-2">
-            {[
-              {
-                label: "In progress",
-                value: undefined,
-                leftIcon: Clock7,
-                activeColor: "bg-gray-700!",
-              },
-              {
-                label: "Eaten",
-                value: ItemStatusType.EATEN,
-                leftIcon: Utensils,
-                activeColor: "bg-green-700!",
-              },
-              {
-                label: "Discarded",
-                value: ItemStatusType.DISCARDED,
-                leftIcon: Trash,
-                activeColor: "bg-red-700!",
-              },
-            ].map((option) => {
-              const Icon = option.leftIcon;
-              const isSelected = form.watch("status") === option.value;
+      <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
+        <div className="bg-muted/50 flex flex-col items-center gap-2 rounded-lg p-6">
+          <span className="text-muted-foreground text-sm font-medium">
+            Percentage Consumed
+          </span>
+          <span className="text-5xl font-bold tabular-nums">
+            {watch("percentConsumed")}%
+          </span>
+        </div>
 
-              return (
-                <Button
-                  type="button"
-                  variant="outline"
-                  key={option.value}
-                  onClick={() =>
-                    form.setValue("status", option.value as ItemStatusType)
-                  }
-                  className={`flex items-center gap-3 rounded-lg border-2 p-3 text-left transition-all duration-200 ${
-                    isSelected
-                      ? `${option.activeColor} text-white shadow-lg`
-                      : "dark:border-gray-700 dark:bg-gray-800/50 dark:text-gray-300"
-                  } `}
-                >
-                  <Icon className="h-4 w-4 flex-shrink-0" />
-                  <span className="font-medium">{option.label}</span>
-                </Button>
-              );
-            })}
+        <div className="space-y-4">
+          <input
+            type="range"
+            min="0"
+            max="100"
+            value={watch("percentConsumed")}
+            onChange={(e) =>
+              setValue("percentConsumed", Number(e.target.value))
+            }
+            className="bg-muted accent-primary h-2 w-full cursor-pointer appearance-none rounded-lg"
+          />
+          <div className="grid grid-cols-5 gap-2">
+            {[0, 25, 50, 75, 100].map((percentage) => (
+              <Button
+                type="button"
+                key={percentage}
+                variant={
+                  watch("percentConsumed") === percentage
+                    ? "default"
+                    : "outline"
+                }
+                size="sm"
+                onClick={() => setValue("percentConsumed", percentage)}
+                className="h-10 text-xs font-medium"
+              >
+                {percentage}%
+              </Button>
+            ))}
           </div>
         </div>
-        <FormFieldWrapper
-          name="percentConsumed"
-          label={
-            <div className="flex items-center justify-between">
-              <label className="text-sm font-medium dark:text-gray-300">
-                How much did you eat?
-              </label>
-              <span className="mr-6 rounded bg-gray-100 px-2 py-1 font-mono text-sm text-gray-800 dark:bg-gray-800 dark:text-gray-400">
-                {form.watch("percentConsumed")}%
+
+        <div className="flex flex-col space-y-3">
+          <label className="mb-3 text-sm font-medium">
+            Did you finish? What happened to it?
+          </label>
+          <div className="grid grid-cols-2 gap-3">
+            <Button
+              type="button"
+              variant={watch("status") === "EATEN" ? "default" : "outline"}
+              onClick={() =>
+                watch("status") === "EATEN"
+                  ? setValue("status", undefined)
+                  : setValue("status", ItemStatusType.EATEN)
+              }
+              className={`flex h-30 flex-col items-center justify-center gap-2 ${
+                watch("status") === "EATEN"
+                  ? "bg-green-700 text-white hover:bg-green-800 dark:bg-green-800 dark:hover:bg-green-700"
+                  : ""
+              }`}
+            >
+              <Utensils className="h-6 w-6" />
+              <span className="font-semibold">Eaten</span>
+              <span
+                className={
+                  watch("status") === "EATEN"
+                    ? "text-sm text-green-100"
+                    : "text-muted-foreground text-sm"
+                }
+              >
+                Ate it all!
               </span>
-            </div>
-          }
-        >
-          {(field) => {
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-            const { value, ...rest } = field;
-            return (
-              <div className="mt-2 flex flex-col items-center gap-3">
-                <Slider
-                  {...rest}
-                  value={[value ?? 0]}
-                  onValueChange={(rest) => {
-                    setValue("percentConsumed", Number(rest?.[0]) ?? 0);
-                  }}
-                  onValueCommit={(commit) => {
-                    setValue("percentConsumed", Number(commit?.[0]) ?? 0);
-                  }}
-                />
-                <div className="flex w-full justify-between gap-2">
-                  {[0, 25, 50, 75, 100].map((percentage) => (
-                    <Button
-                      type="button"
-                      key={percentage}
-                      variant="outline"
-                      size="sm"
-                      onClick={() => setValue("percentConsumed", percentage)}
-                      className={`h-8 flex-1 text-xs dark:border-gray-700 ${
-                        (form.watch("percentConsumed") ?? 0) <= percentage
-                          ? "dark:text-white"
-                          : "bg-gray-400/50"
-                      } `}
-                    >
-                      {percentage}%
-                    </Button>
-                  ))}
-                </div>
-              </div>
-            );
-          }}
-        </FormFieldWrapper>
+            </Button>
+            <Button
+              type="button"
+              variant={watch("status") === "DISCARDED" ? "default" : "outline"}
+              onClick={() =>
+                watch("status") === "DISCARDED"
+                  ? setValue("status", undefined)
+                  : setValue("status", ItemStatusType.DISCARDED)
+              }
+              className={`flex h-30 flex-col items-center justify-center gap-2 ${
+                watch("status") === "DISCARDED"
+                  ? "bg-red-700 text-white hover:bg-red-800 dark:bg-red-900 dark:hover:bg-red-800"
+                  : ""
+              }`}
+            >
+              <Trash className="h-6 w-6" />
+              <span className="font-semibold">Discarded</span>
+              <span
+                className={
+                  watch("status") === "DISCARDED"
+                    ? "text-sm text-red-100"
+                    : "text-muted-foreground text-sm"
+                }
+              >
+                Threw some away...
+              </span>
+            </Button>
+          </div>
+        </div>
         <hr className="mt-6" />
-        <div className="mt-6 flex justify-center gap-3">
+        <div className="flex gap-3 pt-2">
           <Button
             type="button"
             variant="outline"
             onClick={onCancel}
             disabled={isLoading}
-            className="flex-1"
+            className="h-12 flex-1 bg-transparent"
           >
-            {isLoading && <Spinner />}
             Cancel
           </Button>
           <Button
             type="submit"
             variant="default"
             disabled={isLoading}
-            className="flex-1"
+            className="h-12 flex-1"
           >
-            {isLoading && <Spinner />}Update
+            {isLoading ? "Updating..." : "Update"}
           </Button>
         </div>
       </form>

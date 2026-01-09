@@ -12,13 +12,23 @@ export const UsageRate = () => {
       if (curr.items.length > 0) {
         acc.push({
           totalItems: curr.items.length,
-          itemsConsumed: curr.items.reduce(
-            (total, item) =>
-              item.status === ItemStatusType.EATEN
-                ? total + 1
-                : total + item.percentConsumed * 0.01,
-            0,
-          ),
+          itemsConsumed: curr.items.reduce((total, item) => {
+            // Only count items that were actually consumed (EATEN)
+            // Items that are DISCARDED, BAD, OLD, or FRESH should not count as consumed
+            if (item.status === ItemStatusType.EATEN) {
+              return total + 1;
+            }
+            // For items still in progress (FRESH, OLD, BAD), count partial consumption
+            if (
+              item.status === ItemStatusType.FRESH ||
+              item.status === ItemStatusType.OLD ||
+              item.status === ItemStatusType.BAD ||
+              item.status === ItemStatusType.DISCARDED
+            ) {
+              return total + item.percentConsumed * 0.01;
+            }
+            return total;
+          }, 0),
         });
       }
       return acc;
@@ -45,7 +55,7 @@ export const UsageRate = () => {
     if (value > 40) {
       return "text-green-800 dark:text-green-300";
     }
-    if (value < 40 && value > 25) {
+    if (value <= 40 && value > 25) {
       return "text-amber-700 dark:text-amber-300";
     }
     return "text-red-800 dark:text-red-300";
