@@ -7,7 +7,7 @@ import {
 } from "@/schemas/update-item";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { FormProvider, useForm } from "react-hook-form";
-import { AdvancedSelect } from "../AdvancedSelect";
+import Select from "react-select";
 import { FormFieldInput } from "../FormFieldInput";
 import { FormFieldWrapper } from "../FormFieldWrapper";
 import { useEffect } from "react";
@@ -54,10 +54,8 @@ export const ItemForm = ({
     resolver: async (data, context, options) => {
       const transformedData = {
         ...data,
-        itemTypes: data.itemTypes.length
-          ? data.itemTypes.map((type) => ({
-              id: Number.parseInt(type as unknown as string),
-            }))
+        itemTypes: data.itemTypes
+          ? [{ id: Number.parseInt(data.itemTypes as unknown as string) }]
           : [],
       };
       return zodResolver(updateItemFormSchema)(
@@ -73,7 +71,7 @@ export const ItemForm = ({
       quantity: 1,
       unit: "",
       importId: "",
-      itemTypes: [],
+      itemTypes: undefined,
       percentConsumed: defaultValues?.percentConsumed ?? 0,
       status: defaultValues?.status ?? ItemStatusType.FRESH,
     },
@@ -83,9 +81,7 @@ export const ItemForm = ({
     if (defaultValues) {
       reset({
         ...defaultValues,
-        itemTypes: defaultValues?.itemTypes?.map((type) =>
-          type?.id?.toString(),
-        ),
+        itemTypes: defaultValues?.itemTypes?.[0]?.id?.toString(),
         price: Number.parseFloat(`${defaultValues.price}`)
           .toFixed(2)
           .toString(),
@@ -94,7 +90,7 @@ export const ItemForm = ({
           defaultValues.status === ItemStatusType.EATEN
             ? defaultValues.status
             : undefined,
-      } as UpdateItemFormSchemaType & { itemTypes: string[] });
+      } as UpdateItemFormSchemaType & { itemTypes: string });
     }
   }, [defaultValues, reset]);
 
@@ -114,7 +110,10 @@ export const ItemForm = ({
 
   return (
     <FormProvider {...form}>
-      <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-2">
+      <form
+        onSubmit={form.handleSubmit(handleSubmit)}
+        className="space-y-2 p-1"
+      >
         <FormFieldInput
           label="Name"
           name="name"
@@ -132,19 +131,65 @@ export const ItemForm = ({
           placeholder="0.00"
         />
         <FormFieldWrapper name="itemTypes" label="Item Type">
-          {(field) => (
-            <AdvancedSelect
-              {...field}
-              options={itemTypes.map((type) => ({
-                label: type.name,
-                value: type.id.toString(),
-              }))}
-              onValueChange={field.onChange}
-              searchable
-              placeholder="Select item types"
-              loading={isLoadingItemTypes}
-            />
-          )}
+          {(field) => {
+            const selectedOption = itemTypes.find(
+              (type) => type.id.toString() === field.value,
+            );
+            return (
+              <Select
+                {...field}
+                options={itemTypes.map((type) => ({
+                  label: type.name,
+                  value: type.id.toString(),
+                }))}
+                value={
+                  selectedOption
+                    ? {
+                        label: selectedOption.name,
+                        value: selectedOption.id.toString(),
+                      }
+                    : null
+                }
+                onChange={(selected) => {
+                  field.onChange(selected ? selected.value : "");
+                }}
+                isSearchable
+                placeholder="Select item type"
+                isLoading={isLoadingItemTypes}
+                classNames={{
+                  control: (state) =>
+                    `!border-input !bg-background !min-h-10 !rounded-md ${
+                      state.isFocused ? "!ring-2 !ring-ring !border-input" : ""
+                    }`,
+                  menu: () =>
+                    "!bg-popover !border !border-input !rounded-md !shadow-md",
+                  menuList: () => "!p-1",
+                  option: (state) =>
+                    `!text-sm !rounded-sm !cursor-pointer ${
+                      state.isSelected
+                        ? "!bg-primary !text-primary-foreground"
+                        : state.isFocused
+                          ? "!bg-accent !text-accent-foreground"
+                          : "!bg-transparent !text-foreground"
+                    }`,
+                  placeholder: () => "!text-muted-foreground !text-sm",
+                  input: () => "!text-foreground !text-sm",
+                  singleValue: () => "!text-foreground !text-sm",
+                  loadingIndicator: () => "!text-muted-foreground",
+                  clearIndicator: () =>
+                    "!text-muted-foreground hover:!text-foreground !cursor-pointer",
+                  dropdownIndicator: () =>
+                    "!text-muted-foreground hover:!text-foreground !cursor-pointer",
+                }}
+                styles={{
+                  control: (base) => ({
+                    ...base,
+                    boxShadow: "none",
+                  }),
+                }}
+              />
+            );
+          }}
         </FormFieldWrapper>
         {!isImport && (
           <FormFieldSegmentedControl
@@ -248,10 +293,8 @@ export const UpdateItemForm = ({
       const transformedData = {
         ...data,
         percentConsumed: Number(data.percentConsumed) ?? 0,
-        itemTypes: data.itemTypes.length
-          ? data.itemTypes.map((type) => ({
-              id: Number.parseInt(type as unknown as string),
-            }))
+        itemTypes: data.itemTypes
+          ? [{ id: Number.parseInt(data.itemTypes as unknown as string) }]
           : [],
       };
       return zodResolver(updateItemFormSchema)(
@@ -267,7 +310,7 @@ export const UpdateItemForm = ({
       quantity: 1,
       unit: "",
       importId: "",
-      itemTypes: [],
+      itemTypes: undefined,
       percentConsumed: defaultValues?.percentConsumed ?? 0,
       status: defaultValues?.status ?? ItemStatusType.FRESH,
     },
@@ -277,9 +320,7 @@ export const UpdateItemForm = ({
     if (defaultValues) {
       reset({
         ...defaultValues,
-        itemTypes: defaultValues?.itemTypes?.map((type) =>
-          type?.id?.toString(),
-        ),
+        itemTypes: defaultValues?.itemTypes?.[0]?.id?.toString(),
         price: Number.parseFloat(`${defaultValues.price}`)
           .toFixed(2)
           .toString(),
@@ -288,7 +329,7 @@ export const UpdateItemForm = ({
           defaultValues.status === ItemStatusType.EATEN
             ? defaultValues.status
             : undefined,
-      } as UpdateItemFormSchemaType & { itemTypes: string[] });
+      } as UpdateItemFormSchemaType & { itemTypes: string });
     }
   }, [defaultValues, reset]);
 
