@@ -19,7 +19,7 @@ import {
 } from "../ui/table";
 import { Input } from "../Input";
 import { Button } from "../ui/button";
-import { InputSelectTrigger, SearchableSelect } from "../SearchableSelect";
+import Select from "react-select";
 import { useItemTypes } from "@/hooks/useItemTypes";
 import { useItems } from "@/hooks/useItems";
 import { type Item } from "@/generated/prisma";
@@ -135,22 +135,62 @@ export const ItemsTable: React.FC<ItemsTableProps> = ({ items, onCancel }) => {
             table.options.meta.updateData(columnId, row.original, val);
           }
         };
+        const selectedOption = itemTypes.find(
+          (type) => type.id.toString() === `${value}`,
+        );
         return (
-          <SearchableSelect
+          <Select
             options={itemTypes.map((type) => ({
               label: type.name,
               value: type.id.toString(),
             }))}
-            // eslint-disable-next-line @typescript-eslint/no-base-to-string, @typescript-eslint/restrict-template-expressions
-            value={`${value}`}
-            onValueChange={(val) => {
+            value={
+              selectedOption
+                ? {
+                    label: selectedOption.name,
+                    value: selectedOption.id.toString(),
+                  }
+                : null
+            }
+            onChange={(selected) => {
+              const val = selected ? selected.value : "";
               setValue(val);
               updateTableState(val);
             }}
+            isSearchable
             placeholder="Select item type"
-          >
-            {(provided) => <InputSelectTrigger {...provided} />}
-          </SearchableSelect>
+            classNames={{
+              control: (state) =>
+                `!border-input !bg-background !min-h-10 !rounded-md ${
+                  state.isFocused ? "!ring-2 !ring-ring !border-input" : ""
+                }`,
+              menu: () =>
+                "!bg-popover !border !border-input !rounded-md !shadow-md",
+              menuList: () => "!p-1",
+              option: (state) =>
+                `!text-sm !rounded-sm !cursor-pointer ${
+                  state.isSelected
+                    ? "!bg-primary !text-primary-foreground"
+                    : state.isFocused
+                      ? "!bg-accent !text-accent-foreground"
+                      : "!bg-transparent !text-foreground"
+                }`,
+              placeholder: () => "!text-muted-foreground !text-sm",
+              input: () => "!text-foreground !text-sm",
+              singleValue: () => "!text-foreground !text-sm",
+              loadingIndicator: () => "!text-muted-foreground",
+              clearIndicator: () =>
+                "!text-muted-foreground hover:!text-foreground !cursor-pointer",
+              dropdownIndicator: () =>
+                "!text-muted-foreground hover:!text-foreground !cursor-pointer",
+            }}
+            styles={{
+              control: (base) => ({
+                ...base,
+                boxShadow: "none",
+              }),
+            }}
+          />
         );
       },
     },
