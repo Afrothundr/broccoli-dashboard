@@ -259,7 +259,7 @@ export const ItemForm = ({
             className="grow-2"
           >
             {isLoading && <Spinner />}
-            {isImport ? "Skip" : "Cancel"}
+            Cancel
           </Button>
           <Button
             type="submit"
