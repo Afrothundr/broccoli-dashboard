@@ -270,9 +270,14 @@ const TripStepperContent: React.FC<TripStepperContentProps> = ({
               </Button>
             ) : (
               <Button onClick={stepper.next} className="flex-1 md:flex-initial">
-                {hasItemsToImport && currentIndex === 0
-                  ? "Import Items"
-                  : "Next"}
+                {(() => {
+                  if (hasItemsToImport && currentIndex === 0) {
+                    return "Import Items";
+                  } else if (currentIndex === 1) {
+                    return "Review Items";
+                  }
+                  return "Next";
+                })()}
               </Button>
             )}
           </div>
