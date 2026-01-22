@@ -4,9 +4,9 @@ import * as React from "react";
 import { SimpleDialog } from "../SimpleDialog";
 import { ReceiptGallery } from "./ReceiptGallery";
 import { ReceiptImportWizard } from "./ReceiptImportWizard";
-import { ItemsTable } from "./ItemsTable";
+import { ItemsTable, type ItemsTableRef } from "./ItemsTable";
 import type { ItemType, GroceryTrip, Item, Receipt } from "@/generated/prisma";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { defineStepper } from "@stepperize/react";
 import { Button } from "@/components/ui/button";
 import {
@@ -135,6 +135,7 @@ const TripStepperContent: React.FC<TripStepperContentProps> = ({
 }) => {
   const stepperWithImport = useStepperWithImport();
   const stepperWithoutImport = useStepperWithoutImport();
+  const itemsTableRef = useRef<ItemsTableRef>(null);
 
   const stepper = hasItemsToImport ? stepperWithImport : stepperWithoutImport;
   const steps = hasItemsToImport ? stepsWithImport : stepsWithoutImport;
@@ -150,6 +151,14 @@ const TripStepperContent: React.FC<TripStepperContentProps> = ({
   const handleImportComplete = () => {
     refetchTrip();
     stepper.next();
+  };
+
+  const handleFinish = () => {
+    // Save changes from ItemsTable before closing
+    if (itemsTableRef.current) {
+      itemsTableRef.current.saveChanges();
+    }
+    onClose();
   };
 
   const stepIcons = {
@@ -239,7 +248,7 @@ const TripStepperContent: React.FC<TripStepperContentProps> = ({
                 onComplete={handleImportComplete}
               />
             ) : null,
-          review: () => <ReviewStep items={trip.items} onClose={onClose} />,
+          review: () => <ReviewStep items={trip.items} ref={itemsTableRef} />,
         })}
       </div>
 
@@ -256,16 +265,14 @@ const TripStepperContent: React.FC<TripStepperContentProps> = ({
           </Button>
           <div className="flex gap-3">
             {stepper.isLast ? (
-              <Button onClick={onClose} className="flex-1 md:flex-initial">
-                Close
+              <Button onClick={handleFinish} className="flex-1 md:flex-initial">
+                Finish
               </Button>
             ) : (
               <Button onClick={stepper.next} className="flex-1 md:flex-initial">
                 {hasItemsToImport && currentIndex === 0
                   ? "Import Items"
-                  : stepper.isLast
-                    ? "Finish"
-                    : "Next"}
+                  : "Next"}
               </Button>
             )}
           </div>
@@ -336,19 +343,16 @@ const ImportStep: React.FC<{
           refetchTrip={refetchTrip}
         />
       </div>
-      <div className="flex justify-center">
-        <Button variant="outline" onClick={onComplete}>
-          Skip Remaining Items
-        </Button>
-      </div>
     </div>
   );
 };
 
-const ReviewStep: React.FC<{
-  items: (Item & { itemTypes: ItemType[] })[];
-  onClose: () => void;
-}> = ({ items, onClose }) => {
+const ReviewStep = React.forwardRef<
+  ItemsTableRef,
+  {
+    items: (Item & { itemTypes: ItemType[] })[];
+  }
+>(({ items }, ref) => {
   return (
     <div className="space-y-4">
       <div>
@@ -357,7 +361,9 @@ const ReviewStep: React.FC<{
           Edit item details and finalize your grocery trip
         </p>
       </div>
-      <ItemsTable items={items} onCancel={onClose} />
+      <ItemsTable items={items} ref={ref} />
     </div>
   );
-};
+});
+
+ReviewStep.displayName = "ReviewStep";

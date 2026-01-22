@@ -1,6 +1,7 @@
 import { TRPCError } from "@trpc/server";
 import { createTRPCRouter, protectedProcedure } from "../trpc";
 import { createItem, getFilteredItems, updateItem } from "@/types/item";
+import { z } from "zod";
 
 export const itemRouter = createTRPCRouter({
   getItems: protectedProcedure
@@ -130,5 +131,36 @@ export const itemRouter = createTRPCRouter({
       }
 
       return createdItem;
+    }),
+  deleteItem: protectedProcedure
+    .input(z.object({ id: z.number() }))
+    .mutation(async ({ ctx, input }) => {
+      const userId = ctx.session.user.id;
+      if (!userId) {
+        throw new TRPCError({ code: "UNAUTHORIZED" });
+      }
+
+      // Verify the item belongs to the user
+      const item = await ctx.db.item.findUnique({
+        where: { id: input.id },
+      });
+
+      if (!item) {
+        throw new TRPCError({ code: "NOT_FOUND", message: "Item not found" });
+      }
+
+      if (item.userId !== userId) {
+        throw new TRPCError({
+          code: "FORBIDDEN",
+          message: "You don't have permission to delete this item",
+        });
+      }
+
+      // Delete the item
+      await ctx.db.item.delete({
+        where: { id: input.id },
+      });
+
+      return { success: true };
     }),
 });

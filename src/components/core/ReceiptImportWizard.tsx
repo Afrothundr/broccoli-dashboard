@@ -18,7 +18,6 @@ import {
   ChevronLeft,
   ChevronRight,
   PackageCheck,
-  SkipForward,
   Edit,
   CheckCircle,
   AlertCircle,
@@ -53,7 +52,6 @@ export const ReceiptImportWizard = ({
     (CombinedItemType | ImportedItemProps)[]
   >([]);
   const [api, setApi] = useState<CarouselApi>();
-  const [isSkipping, setIsSkipping] = useState(false);
   const [showFormForItems, setShowFormForItems] = useState<Set<number>>(
     new Set(),
   );
@@ -138,37 +136,6 @@ export const ReceiptImportWizard = ({
       nextStep();
     } catch (error) {
       console.error(error);
-    }
-  };
-
-  const handleSkip = async (index: number) => {
-    setIsSkipping(true);
-    try {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-      const scrapedData = JSON.parse(receipt.scrapedData as string);
-      if ("items" in scrapedData) {
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
-        const items = scrapedData.items as unknown[];
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
-        items.splice(index, 1);
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-        const newData = {
-          ...scrapedData,
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
-          items,
-        };
-
-        await updateReceipt({
-          id: receipt.id,
-          scrapedData: JSON.stringify(newData),
-        });
-      }
-      refetchTrip();
-      nextStep();
-    } catch (error) {
-      console.error("Error skipping item:", error);
-    } finally {
-      setIsSkipping(false);
     }
   };
 
@@ -257,9 +224,7 @@ export const ReceiptImportWizard = ({
               variant="ghost"
               size="sm"
               onClick={() => api?.scrollPrev()}
-              disabled={
-                !api?.canScrollPrev() || isUpdatingReceipt || isSkipping
-              }
+              disabled={!api?.canScrollPrev() || isUpdatingReceipt}
             >
               <ChevronLeft className="h-4 w-4" />
             </Button>
@@ -267,9 +232,7 @@ export const ReceiptImportWizard = ({
               variant="ghost"
               size="sm"
               onClick={() => api?.scrollNext()}
-              disabled={
-                !api?.canScrollNext() || isUpdatingReceipt || isSkipping
-              }
+              disabled={!api?.canScrollNext() || isUpdatingReceipt}
             >
               <ChevronRight className="h-4 w-4" />
             </Button>
@@ -360,7 +323,7 @@ export const ReceiptImportWizard = ({
                     <div className="flex gap-2">
                       <Button
                         onClick={() => handleQuickImport(activeItem)}
-                        disabled={isUpdatingReceipt || isSkipping}
+                        disabled={isUpdatingReceipt}
                         className="flex-1"
                         size="lg"
                       >
@@ -369,20 +332,12 @@ export const ReceiptImportWizard = ({
                       </Button>
                       <Button
                         onClick={() => toggleFormVisibility(itemIdx)}
-                        disabled={isUpdatingReceipt || isSkipping}
+                        disabled={isUpdatingReceipt}
                         variant="outline"
                         size="lg"
                       >
                         <Edit className="mr-2 h-4 w-4" />
                         Edit
-                      </Button>
-                      <Button
-                        onClick={() => handleSkip(itemIdx)}
-                        disabled={isUpdatingReceipt || isSkipping}
-                        variant="ghost"
-                        size="lg"
-                      >
-                        Skip
                       </Button>
                     </div>
                   )}
@@ -390,29 +345,11 @@ export const ReceiptImportWizard = ({
                   {showForm && (
                     <ItemForm
                       defaultValues={defaultValues}
-                      onCancel={() => handleSkip(itemIdx)}
+                      onCancel={() => toggleFormVisibility(itemIdx)}
                       onSubmit={(val) => handleNewItemSave(val)}
                       isImport
-                      isLoading={isUpdatingReceipt || isSkipping}
+                      isLoading={isUpdatingReceipt}
                     />
-                  )}
-
-                  {itemsRemaining > 0 && (
-                    <div className="rounded-lg border border-blue-200 bg-blue-50 p-3 dark:border-blue-900 dark:bg-blue-950/20">
-                      <div className="flex items-start gap-2">
-                        <SkipForward className="mt-0.5 h-4 w-4 flex-shrink-0 text-blue-600 dark:text-blue-400" />
-                        <div className="flex-1">
-                          <p className="text-sm font-medium text-blue-900 dark:text-blue-100">
-                            Quick Tip
-                          </p>
-                          <p className="mt-0.5 text-xs text-blue-700 dark:text-blue-300">
-                            {hasAllRequiredFields && !showForm
-                              ? 'Click "Import Item" to quickly add this item, or "Edit" to make changes first.'
-                              : 'Click "Skip" to move to the next item, or use the arrow buttons above to navigate.'}
-                          </p>
-                        </div>
-                      </div>
-                    </div>
                   )}
                 </div>
               </CarouselItem>
