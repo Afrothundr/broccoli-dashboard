@@ -81,7 +81,23 @@ export const TripDetailsDialog: React.FC<TripDetailsDialogProps> = ({
   const hasItemsToImport = itemsToImport > 0;
 
   useEffect(() => {
-    setActiveReceipt(_trip?.receipts?.[0]);
+    // Only update activeReceipt if it doesn't exist in the current receipts array
+    // This preserves the selected receipt when trip data is refetched
+    if (activeReceipt) {
+      const stillExists = _trip?.receipts?.find(
+        (r) => r.id === activeReceipt.id,
+      );
+      if (stillExists) {
+        // Update with fresh data but keep the same receipt selected
+        setActiveReceipt(stillExists);
+      } else {
+        // Receipt was deleted, fall back to first receipt
+        setActiveReceipt(_trip?.receipts?.[0]);
+      }
+    } else {
+      // No receipt selected yet, select the first one
+      setActiveReceipt(_trip?.receipts?.[0]);
+    }
   }, [_trip]);
 
   if (!trip) return null;
