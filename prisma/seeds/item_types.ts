@@ -723,4 +723,373 @@ export const ITEM_TYPES: Record<
     suggested_life_span_seconds: 0,
     category: "Frozen",
   },
+  Strawberries: {
+    name: "Strawberries",
+    storage_advice:
+      "Refrigerate unwashed in original container. Wash just before eating.",
+    suggested_life_span_seconds: 432000,
+    category: "Fruit",
+  },
+  Blueberries: {
+    name: "Blueberries",
+    storage_advice:
+      "Refrigerate unwashed in original container in high-humidity drawer.",
+    suggested_life_span_seconds: 604800,
+    category: "Fruit",
+  },
+  Watermelon: {
+    name: "Watermelon",
+    storage_advice:
+      "Store whole at room temperature. Refrigerate cut pieces in airtight container.",
+    suggested_life_span_seconds: 604800,
+    category: "Fruit",
+  },
+  Cantaloupe: {
+    name: "Cantaloupe",
+    storage_advice:
+      "Store whole at room temperature until ripe, then refrigerate. Refrigerate cut pieces immediately.",
+    suggested_life_span_seconds: 432000,
+    category: "Fruit",
+  },
+  Tangerine: {
+    name: "Tangerine",
+    storage_advice: "Store at room temperature or in the refrigerator.",
+    suggested_life_span_seconds: 604800,
+    category: "Fruit",
+  },
+  Blackberries: {
+    name: "Blackberries",
+    storage_advice:
+      "Refrigerate unwashed in original container. Very delicate, eat ASAP.",
+    suggested_life_span_seconds: 259200,
+    category: "Fruit",
+  },
+
+  // VEGETABLES (15 items)
+  "Bell Peppers": {
+    name: "Bell Peppers",
+    storage_advice:
+      "Store in a breathable bag in the low-humidity drawer of the refrigerator.",
+    suggested_life_span_seconds: 604800,
+    category: "Vegetables",
+  },
+  "Jalapeño Peppers": {
+    name: "Jalapeño Peppers",
+    storage_advice: "Store in a breathable bag in the refrigerator.",
+    suggested_life_span_seconds: 604800,
+    category: "Vegetables",
+  },
+  "Poblano Peppers": {
+    name: "Poblano Peppers",
+    storage_advice: "Store in a breathable bag in the refrigerator.",
+    suggested_life_span_seconds: 604800,
+    category: "Vegetables",
+  },
+  "Romaine Lettuce": {
+    name: "Romaine Lettuce",
+    storage_advice:
+      "Store in an airtight container in the high-humidity drawer.",
+    suggested_life_span_seconds: 604800,
+    category: "Vegetables",
+  },
+  "Butterhead Lettuce": {
+    name: "Butterhead Lettuce",
+    storage_advice:
+      "Store in an airtight container in the high-humidity drawer.",
+    suggested_life_span_seconds: 432000,
+    category: "Vegetables",
+  },
+  "Broccoli Rabe": {
+    name: "Broccoli Rabe",
+    storage_advice:
+      "Store loosely wrapped in a breathable bag in high-humidity drawer.",
+    suggested_life_span_seconds: 259200,
+    category: "Vegetables",
+  },
+  Scallions: {
+    name: "Scallions",
+    storage_advice:
+      "Refrigerate in a breathable bag in the high-humidity drawer.",
+    suggested_life_span_seconds: 604800,
+    category: "Vegetables",
+  },
+  Leeks: {
+    name: "Leeks",
+    storage_advice:
+      "Refrigerate in a breathable bag in the high-humidity drawer.",
+    suggested_life_span_seconds: 604800,
+    category: "Vegetables",
+  },
+  "Baby Carrots": {
+    name: "Baby Carrots",
+    storage_advice:
+      "Store in the refrigerator in original packaging or airtight container.",
+    suggested_life_span_seconds: 1209600,
+    category: "Vegetables",
+  },
+  "Cherry Tomatoes": {
+    name: "Cherry Tomatoes",
+    storage_advice: "Store at room temperature away from direct sunlight.",
+    suggested_life_span_seconds: 259200,
+    category: "Vegetables",
+  },
+  "Grape Tomatoes": {
+    name: "Grape Tomatoes",
+    storage_advice: "Store at room temperature away from direct sunlight.",
+    suggested_life_span_seconds: 259200,
+    category: "Vegetables",
+  },
+  "Brussels Sprouts": {
+    name: "Brussels Sprouts",
+    storage_advice:
+      "Store loosely wrapped in a refrigerator crisper drawer set to high-humidity.",
+    suggested_life_span_seconds: 864000,
+    category: "Vegetables",
+  },
+  Fennel: {
+    name: "Fennel",
+    storage_advice: "Store in a breathable bag in the high-humidity drawer.",
+    suggested_life_span_seconds: 604800,
+    category: "Vegetables",
+  },
+  "Mini Cucumbers": {
+    name: "Mini Cucumbers",
+    storage_advice: "Refrigerate in the high-humidity drawer.",
+    suggested_life_span_seconds: 604800,
+    category: "Vegetables",
+  },
+
+  // PROTEINS/MEAT/SEAFOOD (8 items)
+  "Chicken Breast": {
+    name: "Chicken Breast",
+    storage_advice:
+      "Store on the bottom shelf of the refrigerator in airtight packaging. Freeze for longer storage.",
+    suggested_life_span_seconds: 172800,
+    category: "Meat",
+  },
+  "Ground Beef": {
+    name: "Ground Beef",
+    storage_advice:
+      "Store on the bottom shelf of the refrigerator in airtight packaging. Freeze for longer storage.",
+    suggested_life_span_seconds: 172800,
+    category: "Meat",
+  },
+  "Pork Chops": {
+    name: "Pork Chops",
+    storage_advice:
+      "Store on the bottom shelf of the refrigerator in airtight packaging. Freeze for longer storage.",
+    suggested_life_span_seconds: 259200,
+    category: "Meat",
+  },
+  "Salmon Fillet": {
+    name: "Salmon Fillet",
+    storage_advice:
+      "Store on the bottom shelf of the refrigerator in airtight packaging. Use ASAP.",
+    suggested_life_span_seconds: 172800,
+    category: "Meat",
+  },
+  Shrimp: {
+    name: "Shrimp",
+    storage_advice:
+      "Store on the bottom shelf of the refrigerator in airtight packaging. Use ASAP or freeze.",
+    suggested_life_span_seconds: 172800,
+    category: "Meat",
+  },
+  "Turkey Breast": {
+    name: "Turkey Breast",
+    storage_advice:
+      "Store on the bottom shelf of the refrigerator in airtight packaging.",
+    suggested_life_span_seconds: 172800,
+    category: "Meat",
+  },
+  "Sausage Links": {
+    name: "Sausage Links",
+    storage_advice: "Store in the refrigerator in original packaging.",
+    suggested_life_span_seconds: 604800,
+    category: "Meat",
+  },
+
+  // DAIRY (7 items)
+  "Sour Cream": {
+    name: "Sour Cream",
+    storage_advice: "Store in an airtight container in the refrigerator.",
+    suggested_life_span_seconds: 1209600,
+    category: "Dairy",
+  },
+  "Cream Cheese": {
+    name: "Cream Cheese",
+    storage_advice:
+      "Store in original packaging or airtight container in the refrigerator.",
+    suggested_life_span_seconds: 1209600,
+    category: "Dairy",
+  },
+  "Parmesan Cheese": {
+    name: "Parmesan Cheese",
+    storage_advice:
+      "Store wrapped in wax paper or parchment in the refrigerator.",
+    suggested_life_span_seconds: 2419200,
+    category: "Dairy",
+  },
+  "Mozzarella Cheese": {
+    name: "Mozzarella Cheese",
+    storage_advice: "Store in brine or airtight container in the refrigerator.",
+    suggested_life_span_seconds: 604800,
+    category: "Dairy",
+  },
+  "Cheddar Cheese": {
+    name: "Cheddar Cheese",
+    storage_advice:
+      "Store wrapped in wax paper or parchment in the refrigerator.",
+    suggested_life_span_seconds: 2419200,
+    category: "Dairy",
+  },
+  "Heavy Cream": {
+    name: "Heavy Cream",
+    storage_advice:
+      "Keep in the cold part of the refrigerator in original container.",
+    suggested_life_span_seconds: 1209600,
+    category: "Dairy",
+  },
+  "Half and Half": {
+    name: "Half and Half",
+    storage_advice:
+      "Keep in the cold part of the refrigerator in original container.",
+    suggested_life_span_seconds: 604800,
+    category: "Dairy",
+  },
+
+  // PANTRY ITEMS (10 items)
+  "Canned Beans": {
+    name: "Canned Beans",
+    storage_advice:
+      "Store in a cool dry place. Refrigerate after opening in airtight container.",
+    suggested_life_span_seconds: 63072000,
+    category: "Pantry",
+  },
+  "Canned Tomatoes": {
+    name: "Canned Tomatoes",
+    storage_advice:
+      "Store in a cool dry place. Refrigerate after opening in airtight container.",
+    suggested_life_span_seconds: 63072000,
+    category: "Pantry",
+  },
+  "Olive Oil": {
+    name: "Olive Oil",
+    storage_advice: "Store in a cool dark place away from heat and light.",
+    suggested_life_span_seconds: 31536000,
+    category: "Pantry",
+  },
+  "Vegetable Oil": {
+    name: "Vegetable Oil",
+    storage_advice: "Store in a cool dark place away from heat and light.",
+    suggested_life_span_seconds: 31536000,
+    category: "Pantry",
+  },
+  "Tortilla Chips": {
+    name: "Tortilla Chips",
+    storage_advice: "Store in an airtight container in a cool dry place.",
+    suggested_life_span_seconds: 1814400,
+    category: "Pantry",
+  },
+  Crackers: {
+    name: "Crackers",
+    storage_advice: "Store in an airtight container in a cool dry place.",
+    suggested_life_span_seconds: 2592000,
+    category: "Pantry",
+  },
+  "Peanut Butter": {
+    name: "Peanut Butter",
+    storage_advice:
+      "Store in a cool dry place. Refrigerate natural peanut butter after opening.",
+    suggested_life_span_seconds: 15552000,
+    category: "Pantry",
+  },
+  Honey: {
+    name: "Honey",
+    storage_advice:
+      "Store in a cool dry place. Does not require refrigeration.",
+    suggested_life_span_seconds: 252288000,
+    category: "Pantry",
+  },
+  "Maple Syrup": {
+    name: "Maple Syrup",
+    storage_advice: "Refrigerate after opening in original container.",
+    suggested_life_span_seconds: 31536000,
+    category: "Pantry",
+  },
+  Cereal: {
+    name: "Cereal",
+    storage_advice: "Store in an airtight container in a cool dry place.",
+    suggested_life_span_seconds: 5184000,
+    category: "Pantry",
+  },
+
+  // FROZEN ITEMS (3 items)
+  "Frozen Vegetables": {
+    name: "Frozen Vegetables",
+    storage_advice: "Keep frozen at 0°F (-18°C) or below.",
+    suggested_life_span_seconds: 31536000,
+    category: "Frozen",
+  },
+  "Frozen Berries": {
+    name: "Frozen Berries",
+    storage_advice: "Keep frozen at 0°F (-18°C) or below.",
+    suggested_life_span_seconds: 31536000,
+    category: "Frozen",
+  },
+  "Ice Cream": {
+    name: "Ice Cream",
+    storage_advice:
+      "Keep frozen at 0°F (-18°C) or below. Store in back of freezer.",
+    suggested_life_span_seconds: 5184000,
+    category: "Frozen",
+  },
+
+  // BEVERAGES (4 items)
+  "Orange Juice": {
+    name: "Orange Juice",
+    storage_advice: "Refrigerate in original container. Shake before use.",
+    suggested_life_span_seconds: 604800,
+    category: "Beverages",
+  },
+  Soda: {
+    name: "Soda",
+    storage_advice: "Store in a cool dry place. Refrigerate for best taste.",
+    suggested_life_span_seconds: 15552000,
+    category: "Beverages",
+  },
+  "Sparkling Water": {
+    name: "Sparkling Water",
+    storage_advice: "Store in a cool dry place. Refrigerate for best taste.",
+    suggested_life_span_seconds: 7776000,
+    category: "Beverages",
+  },
+  Coffee: {
+    name: "Coffee",
+    storage_advice:
+      "Store whole beans in an airtight container in a cool dark place. Freeze for longer storage.",
+    suggested_life_span_seconds: 1209600,
+    category: "Beverages",
+  },
+
+  // CONDIMENTS & SAUCES (3 items)
+  Ketchup: {
+    name: "Ketchup",
+    storage_advice: "Refrigerate after opening. Store in original container.",
+    suggested_life_span_seconds: 15552000,
+    category: "Pantry",
+  },
+  Mustard: {
+    name: "Mustard",
+    storage_advice: "Refrigerate after opening. Store in original container.",
+    suggested_life_span_seconds: 31536000,
+    category: "Pantry",
+  },
+  "Soy Sauce": {
+    name: "Soy Sauce",
+    storage_advice:
+      "Store in a cool dark place. Refrigerate after opening for best quality.",
+    suggested_life_span_seconds: 63072000,
+    category: "Pantry",
+  },
 };
