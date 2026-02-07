@@ -1,11 +1,12 @@
 "use client";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import type { Receipt } from "@/generated/prisma";
 import { ImageUpload } from "./ImageUpload";
 import { cn } from "@/lib/utils";
 import { Spinner } from "../Spinner";
 import { AlertCircle } from "lucide-react";
+import FallbackImage from "./FallbackImage";
 
 // Utility functions for image shimmer effect
 const shimmer = (w: number, h: number) => `
@@ -45,6 +46,7 @@ export const ReceiptGallery: React.FC<ReceiptGalleryProps> = ({
   getReceipts,
 }) => {
   const pollingIntervalRef = useRef<NodeJS.Timeout | null>(null);
+  const [imageSources, setImageSources] = useState<Record<number, string>>({});
 
   // Create a status check function that returns true when all receipts are done processing
   const checkReceiptStatus = () => {
@@ -84,7 +86,7 @@ export const ReceiptGallery: React.FC<ReceiptGalleryProps> = ({
 
   return (
     <div className="mb-4 flex flex-col gap-2">
-      <div className="flex gap-3">
+      <div className="grid grid-cols-2 items-start gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8">
         {receipts.map((receipt, index) => {
           const classes = cn(
             "h-15 w-15 rounded-full flex items-center justify-center",
@@ -96,7 +98,10 @@ export const ReceiptGallery: React.FC<ReceiptGalleryProps> = ({
           // Render based on receipt status
           if (receipt.status === "PROCESSING") {
             return (
-              <div className="row flex items-center gap-2" key={receipt.id}>
+              <div
+                key={receipt.id}
+                className="flex flex-col items-center gap-1"
+              >
                 <div
                   className={cn(
                     classes,
@@ -105,7 +110,9 @@ export const ReceiptGallery: React.FC<ReceiptGalleryProps> = ({
                 >
                   <Spinner size="sm" className="text-gray-500" />
                 </div>
-                <p className="">Processing image please wait...</p>
+                <p className="text-center text-xs text-gray-500">
+                  Processing...
+                </p>
               </div>
             );
           }
@@ -114,21 +121,30 @@ export const ReceiptGallery: React.FC<ReceiptGalleryProps> = ({
             return (
               <div
                 key={receipt.id}
-                className={cn(
-                  classes,
-                  "cursor-pointer border-2 border-red-300 bg-red-100",
-                )}
-                onClick={() => handleReceiptClick(index)}
+                className="flex flex-col items-center gap-1"
               >
-                <AlertCircle className="h-6 w-6 text-red-500" />
+                <div
+                  className={cn(
+                    classes,
+                    "cursor-pointer border-2 border-red-300 bg-red-100 transition-colors hover:bg-red-200",
+                  )}
+                  onClick={() => handleReceiptClick(index)}
+                >
+                  <AlertCircle className="h-6 w-6 text-red-500" />
+                </div>
+                <p className="text-center text-xs text-red-500">
+                  Upload failed
+                </p>
               </div>
             );
           }
 
+          const imageSrc = imageSources[receipt.id] || receipt.url;
+
           // Default case for IMPORTED status - show the image
           return (
             <Image
-              src={receipt.url}
+              src={imageSrc}
               alt={`receipt ${index}`}
               key={receipt.id}
               className={classes}
@@ -136,6 +152,12 @@ export const ReceiptGallery: React.FC<ReceiptGalleryProps> = ({
               height={15}
               placeholder={`data:image/svg+xml;base64,${toBase64(shimmer(700, 475))}`}
               onClick={() => handleReceiptClick(index)}
+              onError={() => {
+                setImageSources((prev) => ({
+                  ...prev,
+                  [receipt.id]: "/fallback_receipt.png",
+                }));
+              }}
             />
           );
         })}

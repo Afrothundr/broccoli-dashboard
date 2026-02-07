@@ -61,6 +61,16 @@ export const UsageRate = () => {
     return "text-red-800 dark:text-red-300";
   })(averageConsumed);
 
+  const gradientColor = ((value: number) => {
+    if (value > 40) {
+      return "from-green-500 to-emerald-600";
+    }
+    if (value <= 40 && value > 25) {
+      return "from-amber-500 to-orange-600";
+    }
+    return "from-red-500 to-rose-600";
+  })(averageConsumed);
+
   if (isLoading || isPending) {
     return <MetricCardSkeleton />;
   }
@@ -73,11 +83,18 @@ export const UsageRate = () => {
         </h3>
         <PercentCircle className="text-muted-foreground h-4 w-4" />
       </div>
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-3">
         <div className={`text-2xl font-bold ${textColor}`}>
           {filteredTrips.length ? averageConsumed : 0}%
         </div>
+        <div className="h-2 w-full overflow-hidden rounded-full bg-gray-200 dark:bg-gray-700">
+          <div
+            className={`h-full bg-gradient-to-r ${gradientColor} transition-all duration-500 ease-out`}
+            style={{ width: `${filteredTrips.length ? averageConsumed : 0}%` }}
+          />
+        </div>
       </div>
+      {/* <div className="mt-3 mb-2"></div> */}
       <p className="text-muted-foreground text-xs">
         how much of your food you are eating
       </p>
