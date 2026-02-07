@@ -1,18 +1,11 @@
 "use client";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "../ui/table";
 import { Button } from "../ui/button";
 import { DataPagination } from "../ui/DataPagination";
 import { Card, CardContent } from "../ui/card";
-import { Receipt, Plus } from "lucide-react";
+import { Receipt, ExternalLink } from "lucide-react";
 import dayjs from "dayjs";
 import { Item, type GroceryTrip } from "@/generated/prisma";
+
 interface GroceryTripsTableProps {
   trips: unknown[];
   currentPage: number;
@@ -21,6 +14,31 @@ interface GroceryTripsTableProps {
   onPageChange: (page: number) => void;
   onTripSelect: (index: number) => void;
 }
+
+const getRecencyGradient = (createdAt: Date): string => {
+  const now = dayjs();
+  const tripDate = dayjs(createdAt);
+  const daysAgo = now.diff(tripDate, "day");
+
+  // Recent (0-7 days): Fresh vibrant green - like fresh produce
+  if (daysAgo <= 7) {
+    return "bg-gradient-to-br from-green-500 to-emerald-600 text-white";
+  }
+  // Recent-ish (8-14 days): Lime to green - still fresh
+  if (daysAgo <= 14) {
+    return "bg-gradient-to-br from-lime-500 to-green-600 text-white";
+  }
+  // Moderate (15-30 days): Teal to cyan - transitioning
+  if (daysAgo <= 30) {
+    return "bg-gradient-to-br from-teal-500 to-cyan-600 text-white";
+  }
+  // Older (31-60 days): Yellow-green to olive - aging produce
+  if (daysAgo <= 60) {
+    return "bg-gradient-to-br from-yellow-500 to-lime-600 text-white";
+  }
+  // Very old (60+ days): Muted sage/olive - past freshness
+  return "bg-gradient-to-br from-stone-400 to-green-600/60 text-white";
+};
 
 export const GroceryTripsTable: React.FC<GroceryTripsTableProps> = ({
   trips,
@@ -54,44 +72,56 @@ export const GroceryTripsTable: React.FC<GroceryTripsTableProps> = ({
 
   return (
     <>
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead>Name</TableHead>
-            <TableHead className="hidden sm:table-cell">Date</TableHead>
-            <TableHead>Total</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {paginatedTrips.map((trip, paginatedIndex) => {
-            const originalIndex = startIndex + paginatedIndex;
-            return (
-              <TableRow key={trip.id}>
-                <TableCell className="font-medium">{trip.name}</TableCell>
-                <TableCell className="hidden sm:table-cell">
-                  {dayjs(trip.createdAt).format("M/D")}
-                </TableCell>
-                <TableCell>
-                  $
-                  {trip.items
-                    .reduce((acc, curr) => acc + curr.price, 0)
-                    .toFixed(2)}
-                </TableCell>
-                <TableCell className="text-right">
+      <div className="flex flex-col gap-3">
+        {paginatedTrips.map((trip, paginatedIndex) => {
+          const originalIndex = startIndex + paginatedIndex;
+          const total = trip.items
+            .reduce((acc, curr) => acc + curr.price, 0)
+            .toFixed(2);
+          const itemCount = trip.items.length;
+          const gradientClass = getRecencyGradient(trip.createdAt);
+
+          return (
+            <Card
+              key={trip.id}
+              className="group cursor-pointer transition-all hover:shadow-md"
+              onClick={() => onTripSelect(originalIndex)}
+            >
+              <CardContent className="flex items-center justify-between p-4">
+                <div className="flex items-center gap-4">
+                  <div
+                    className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-lg font-mono text-sm font-semibold ${gradientClass}`}
+                  >
+                    {dayjs(trip.createdAt).format("MMM")}
+                  </div>
+                  <div className="flex flex-col">
+                    <h3 className="font-semibold">{trip.name}</h3>
+                    <p className="text-muted-foreground text-sm">
+                      {dayjs(trip.createdAt).format("MMM D")} · {itemCount}{" "}
+                      {itemCount === 1 ? "item" : "items"}
+                    </p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-3">
+                  <span className="text-lg font-bold">${total}</span>
                   <Button
                     variant="ghost"
-                    size="sm"
-                    onClick={() => onTripSelect(originalIndex)}
+                    size="icon"
+                    className="bg-primary/10 text-primary hover:bg-primary hover:text-primary-foreground h-10 w-10 shrink-0"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onTripSelect(originalIndex);
+                    }}
                   >
-                    View
+                    <ExternalLink className="h-4 w-4" />
                   </Button>
-                </TableCell>
-              </TableRow>
-            );
-          })}
-        </TableBody>
-      </Table>
-      <div className="mt-2">
+                </div>
+              </CardContent>
+            </Card>
+          );
+        })}
+      </div>
+      <div className="mt-4">
         <DataPagination
           currentPage={currentPage}
           totalItems={trips.length}

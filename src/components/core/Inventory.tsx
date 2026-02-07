@@ -5,13 +5,13 @@
 import { Card } from "../ui/card";
 import { Button } from "../ui/button";
 import { useItems } from "@/hooks/useItems";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   type Item,
   ItemStatusType,
   type ItemType,
 } from "@/generated/prisma/client";
-import { Image } from "@imagekit/next";
+import { IKImageProps, Image } from "@imagekit/next";
 import { DataPagination } from "../ui/DataPagination";
 import { Search } from "lucide-react";
 import { useDebounce } from "use-debounce";
@@ -20,6 +20,8 @@ import { SimpleDialog } from "../SimpleDialog";
 import type { UpdateItemSchemaType } from "@/schemas/update-item";
 import { UpdateItemForm } from "./ItemForm";
 import { Badge } from "../ui/badge";
+import { StaticImport } from "next/dist/shared/lib/get-img-props";
+import ImageFallback from "./FallbackImage";
 
 function getItemStatusColor(status: ItemStatusType) {
   switch (status) {
@@ -155,8 +157,9 @@ export const Inventory = () => {
                   className="flex items-center gap-4 rounded-lg border p-3"
                 >
                   <div className="bg-primary/10 flex h-9 w-9 items-center justify-center rounded-full">
-                    <Image
+                    <ImageFallback
                       urlEndpoint={process.env.NEXT_PUBLIC_IMAGEKIT_URL}
+                      fallbackSrc="/icons/fallback.png"
                       src={`/icons/${item.itemTypes[0]?.name}.png`}
                       height={50}
                       width={50}
