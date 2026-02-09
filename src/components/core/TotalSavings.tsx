@@ -14,25 +14,26 @@ export const TotalSavings = () => {
   const { isLoading, trips, isPending } = useGroceryTrips();
   const [timeFilter, setTimeFilter] = useState<TimeFilter>("all");
 
-  // Filter trips based on selected time period
-  const filteredTrips = useMemo(() => {
+  // Calculate filter date based on selected time period
+  const filterDate = useMemo(() => {
     const now = new Date();
-    const filterDate = new Date();
+    const date = new Date();
 
     switch (timeFilter) {
       case "week":
-        filterDate.setDate(now.getDate() - 7);
+        date.setDate(now.getDate() - 7);
         break;
       case "month":
-        filterDate.setMonth(now.getMonth() - 1);
+        date.setMonth(now.getMonth() - 1);
         break;
       case "all":
       default:
-        return trips;
+        date.setTime(0); // Include all items
+        break;
     }
 
-    return trips.filter((trip) => new Date(trip.createdAt) >= filterDate);
-  }, [trips, timeFilter]);
+    return date;
+  }, [timeFilter]);
 
   // Get time period label for display
   const timePeriodLabel = useMemo(() => {
@@ -50,14 +51,22 @@ export const TotalSavings = () => {
   // Constants for better readability
   const BASELINE_WASTE_RATE = 1 / 3; // 33% baseline food waste
 
-  // Calculate trip statistics with improved logic
-  const tripStats = filteredTrips
+  // Calculate trip statistics with improved logic - filter items by createdAt across all trips
+  const tripStats = trips
     .filter((trip) => trip.items.length > 0)
     .map((trip) => {
-      const totalCost = trip.items.reduce((sum, item) => sum + item.price, 0);
+      // Filter items that were purchased in the selected time period
+      const filteredItems = trip.items.filter(
+        (item) => new Date(item.createdAt) >= filterDate,
+      );
+
+      const totalCost = filteredItems.reduce(
+        (sum, item) => sum + item.price,
+        0,
+      );
 
       // Calculate consumption more accurately
-      const consumedValue = trip.items.reduce((sum, item) => {
+      const consumedValue = filteredItems.reduce((sum, item) => {
         if (item.status === ItemStatusType.EATEN) {
           return sum + item.price; // Full value consumed
         }
@@ -76,7 +85,7 @@ export const TotalSavings = () => {
         wasteValue,
         wasteRate,
         consumptionRate,
-        itemCount: trip.items.length,
+        itemCount: filteredItems.length,
       };
     });
 

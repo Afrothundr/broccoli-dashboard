@@ -86,7 +86,7 @@ export const ReceiptGallery: React.FC<ReceiptGalleryProps> = ({
 
   return (
     <div className="mb-4 flex flex-col gap-2">
-      <div className="grid grid-cols-2 items-start gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8">
+      <div className="grid grid-cols-2 items-start justify-items-center gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8">
         {receipts.map((receipt, index) => {
           const classes = cn(
             "h-15 w-15 rounded-full flex items-center justify-center",
@@ -161,12 +161,15 @@ export const ReceiptGallery: React.FC<ReceiptGalleryProps> = ({
             />
           );
         })}
-        <ImageUpload
-          style="button"
-          groceryTripId={tripId}
-          refetch={refetchTrip}
-          checkReceiptStatus={checkReceiptStatus}
-        />
+        <div className="flex flex-col items-center gap-1">
+          <ImageUpload
+            style="button"
+            groceryTripId={tripId}
+            refetch={refetchTrip}
+            checkReceiptStatus={checkReceiptStatus}
+          />
+          <p className="text-center text-xs text-gray-500">Add new receipt</p>
+        </div>
       </div>
     </div>
   );
