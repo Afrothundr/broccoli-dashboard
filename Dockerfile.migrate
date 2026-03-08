@@ -1,0 +1,50 @@
+FROM node:20-alpine
+
+# Install system dependencies (OpenSSL for Prisma, bun for seeding)
+RUN apk add --no-cache openssl curl bash
+
+# Install bun
+RUN curl -fsSL https://bun.sh/install | bash
+ENV PATH="/root/.bun/bin:${PATH}"
+
+# Set working directory
+WORKDIR /app
+
+# Copy package files
+COPY package.json pnpm-lock.yaml ./
+
+# Install pnpm
+RUN npm install -g pnpm
+
+# Install dependencies (including Prisma)
+RUN pnpm install --frozen-lockfile
+
+# Copy necessary source files for seeding
+COPY tsconfig.json ./
+COPY prisma ./prisma
+COPY src ./src
+
+# Generate Prisma Client
+RUN npx prisma generate
+
+# Create entrypoint script
+COPY <<EOF /app/entrypoint.sh
+#!/bin/bash
+set -e
+echo "Running migrations..."
+npx prisma migrate deploy
+echo "Migrations completed!"
+
+if [ "\$SKIP_SEED" != "true" ]; then
+  echo "Running seeds..."
+  bun prisma/seeds/index.ts || echo "Seeding failed or skipped"
+  echo "Seeding completed!"
+else
+  echo "Skipping seeds (SKIP_SEED=true)"
+fi
+EOF
+
+RUN chmod +x /app/entrypoint.sh
+
+# Default command
+ENTRYPOINT ["/app/entrypoint.sh"]
