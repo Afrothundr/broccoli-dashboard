@@ -1,5 +1,6 @@
 "use client";
 
+import { AnimatePresence } from "framer-motion";
 import { X } from "lucide-react";
 import { useQueryState } from "nuqs";
 import { useEffect, useRef, useState } from "react";
@@ -14,13 +15,34 @@ import {
 import { useMediaQueries } from "@/context/MediaQueriesContext";
 import { AtRiskReviewComplete } from "./AtRiskReviewComplete";
 import { AtRiskReviewDeck } from "./AtRiskReviewDeck";
+import { AtRiskReviewOnboarding } from "./AtRiskReviewOnboarding";
 import { useAtRiskReview } from "./useAtRiskReview";
 import { useAtRiskReviewSession } from "./useAtRiskReviewSession";
+
+const ONBOARDING_LS_KEY = "broccoli:atRiskReview:onboardingSeen";
 
 export function AtRiskReviewModal() {
   const { isMobile } = useMediaQueries();
   const session = useAtRiskReviewSession();
   const review = useAtRiskReview();
+
+  // Show onboarding the first time the deck is opened
+  const [showOnboarding, setShowOnboarding] = useState(() => {
+    try {
+      return !localStorage.getItem(ONBOARDING_LS_KEY);
+    } catch {
+      return false;
+    }
+  });
+
+  function handleOnboardingDismiss() {
+    try {
+      localStorage.setItem(ONBOARDING_LS_KEY, "1");
+    } catch {
+      // ignore
+    }
+    setShowOnboarding(false);
+  }
 
   const shouldOpen =
     isMobile && session.shouldShow && (review.isLoading || !review.isEmpty);
@@ -177,21 +199,30 @@ export function AtRiskReviewModal() {
       </div>
 
       {/* Body */}
-      {isComplete ? (
-        <AtRiskReviewComplete
-          results={review.results}
-          onClose={() => {
-            session.markComplete();
-            setIsOpen(false);
-          }}
-        />
-      ) : (
-        <AtRiskReviewDeck
-          queue={review.queue}
-          onDecision={review.advance}
-          isLoading={review.isLoading}
-        />
-      )}
+      <AnimatePresence mode="wait">
+        {showOnboarding && !isComplete ? (
+          <AtRiskReviewOnboarding
+            key="onboarding"
+            onDismiss={handleOnboardingDismiss}
+          />
+        ) : isComplete ? (
+          <AtRiskReviewComplete
+            key="complete"
+            results={review.results}
+            onClose={() => {
+              session.markComplete();
+              setIsOpen(false);
+            }}
+          />
+        ) : (
+          <AtRiskReviewDeck
+            key="deck"
+            queue={review.queue}
+            onDecision={review.advance}
+            isLoading={review.isLoading}
+          />
+        )}
+      </AnimatePresence>
     </BottomDrawer>
   );
 }
