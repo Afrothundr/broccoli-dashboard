@@ -125,6 +125,7 @@ export function AtRiskReviewModal() {
       onOpenChange={setIsOpen}
       title="Kitchen check-in: review at-risk items"
       renderHeader={null}
+      autoFocus={true}
       classNames={{ content: "h-[100dvh] max-h-[100dvh]" }}
     >
       {/* Custom drag handle */}

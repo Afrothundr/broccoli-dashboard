@@ -1,9 +1,9 @@
-import React from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { type ReactFC, cn } from "@/lib/utils";
+import { AnimatePresence, motion } from "framer-motion";
+import type React from "react";
 import { Drawer } from "vaul";
 import { DrawerContext } from "@/components/DrawerContext";
 import { useControlledOpen } from "@/hooks/useControlledOpen";
+import { cn, type ReactFC } from "@/lib/utils";
 
 export interface BottomDrawerClassNames {
   overlay?: string;
@@ -26,6 +26,7 @@ export interface BottomDrawerProps {
         close: () => void;
       }) => React.ReactNode)
     | null;
+  autoFocus?: boolean;
 }
 
 export const BottomDrawer: ReactFC<BottomDrawerProps> = ({
@@ -36,6 +37,7 @@ export const BottomDrawer: ReactFC<BottomDrawerProps> = ({
   trigger,
   classNames,
   renderHeader,
+  autoFocus = false,
 }) => {
   const { isOpen, setIsOpen, close } = useControlledOpen({
     open,
@@ -70,7 +72,7 @@ export const BottomDrawer: ReactFC<BottomDrawerProps> = ({
 
   return (
     <DrawerContext.Provider value={{ close }}>
-      <Drawer.Root open={isOpen} onOpenChange={setIsOpen}>
+      <Drawer.Root open={isOpen} onOpenChange={setIsOpen} autoFocus={autoFocus}>
         <AnimatePresence>
           {isOpen && (
             <motion.div
