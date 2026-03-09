@@ -33,26 +33,36 @@ interface AtRiskReviewCardProps {
 function getStatusStripClass(status: ItemStatusType): string {
   switch (status) {
     case ItemStatusType.BAD:
-      return "border-t-4 border-red-400 bg-red-50 dark:bg-red-950/30";
+      return "border-t-4 border-red-600 bg-red-50 dark:bg-red-950/30";
     case ItemStatusType.OLD:
-      return "border-t-4 border-yellow-400 bg-yellow-50 dark:bg-yellow-950/30";
+      return "border-t-4 border-yellow-500 bg-yellow-50 dark:bg-yellow-950/30";
     case ItemStatusType.FRESH:
-      return "border-t-4 border-orange-400 bg-orange-50 dark:bg-orange-950/30";
+      return "border-t-4 border-orange-500 bg-orange-50 dark:bg-orange-950/30";
     default:
       return "border-t-4 border-muted bg-muted/30";
   }
 }
 
-function getStatusBadgeColor(status: ItemStatusType): string {
+/**
+ * Returns badge color tokens as [lightColor, darkColor].
+ * Light-mode uses 700/800-scale to meet 4.5:1 contrast on the tinted strip bg.
+ * Dark-mode keeps the original 400-scale which already passes (4.57–6.72:1).
+ */
+function getStatusBadgeColors(status: ItemStatusType): {
+  color: string;
+  darkColor: string;
+} {
   switch (status) {
     case ItemStatusType.BAD:
-      return "red-400";
+      return { color: "red-800", darkColor: "red-400" };
     case ItemStatusType.OLD:
-      return "yellow-400";
+      // amber-800 (#92400e) gives 6.2:1 on the yellow-tinted bg in light mode
+      return { color: "amber-800", darkColor: "yellow-400" };
     case ItemStatusType.FRESH:
-      return "orange-400";
+      // orange-800 (#9a3412) gives ~5.5:1 on the orange-tinted bg in light mode
+      return { color: "orange-800", darkColor: "orange-400" };
     default:
-      return "stone-400";
+      return { color: "stone-700", darkColor: "stone-400" };
   }
 }
 
@@ -131,7 +141,9 @@ export function AtRiskReviewCard({
   }
 
   const stripClass = getStatusStripClass(item.status as ItemStatusType);
-  const badgeColor = getStatusBadgeColor(item.status as ItemStatusType);
+  const { color: badgeColor, darkColor: badgeDarkColor } = getStatusBadgeColors(
+    item.status as ItemStatusType,
+  );
   const urgency = getUrgencyCopy(item);
   const itemTypeName = item.itemTypes[0]?.name;
 
@@ -154,10 +166,12 @@ export function AtRiskReviewCard({
       {/* Status top strip */}
       <div className={`px-4 pt-3 pb-2 ${stripClass}`}>
         <div className="flex items-center justify-between">
-          <CustomBadge color={badgeColor} size="sm">
+          <CustomBadge color={badgeColor} darkColor={badgeDarkColor} size="sm">
             {item.status}
           </CustomBadge>
-          <span className="text-muted-foreground text-sm">{urgency}</span>
+          {/* Use text-foreground instead of text-muted-foreground so urgency copy
+              clears 4.5:1 on the tinted strip backgrounds (muted-fg only gives ~4.1:1) */}
+          <span className="text-foreground text-sm">{urgency}</span>
         </div>
       </div>
 
@@ -186,7 +200,7 @@ export function AtRiskReviewCard({
               <Button
                 autoFocus={isTop}
                 type="button"
-                className="flex-1 gap-1.5 bg-green-600 text-white hover:bg-green-700"
+                className="flex-1 gap-1.5 bg-green-700 text-white hover:bg-green-800"
                 onClick={handleEatenButtonClick}
               >
                 <Utensils size={16} />
@@ -213,7 +227,7 @@ export function AtRiskReviewCard({
                 size={16}
                 className={`transition-transform duration-200 ${showDetails ? "rotate-180" : ""}`}
               />
-              ✏ Update details
+              Update details
             </Button>
           </div>
         )}

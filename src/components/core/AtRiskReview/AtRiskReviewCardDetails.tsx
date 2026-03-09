@@ -133,7 +133,7 @@ export function AtRiskReviewCardDetails({
 
         {/* Confirm button */}
         <Button
-          className="w-full bg-green-600 text-white hover:bg-green-700"
+          className="w-full bg-green-700 text-white hover:bg-green-800"
           onClick={handleConfirm}
         >
           Save &amp; Next →
