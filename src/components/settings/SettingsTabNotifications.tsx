@@ -1,7 +1,9 @@
 "use client";
 
-import { SettingsPanel } from "./SettingsPanel";
+import { Bell, BellOff, CalendarClock, Loader2 } from "lucide-react";
 import { UserSettingSwitchCard } from "@/components/UserSettingSwitchCard";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -9,10 +11,8 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import { usePushNotifications } from "@/hooks/usePushNotifications";
-import { Bell, BellOff, Loader2 } from "lucide-react";
-import { Alert, AlertDescription } from "@/components/ui/alert";
+import { SettingsPanel } from "./SettingsPanel";
 
 export function SettingsTabNotifications() {
   const { permission, isSubscribed, isLoading, subscribe, unsubscribe } =
@@ -161,6 +161,28 @@ export function SettingsTabNotifications() {
             )}
           </CardContent>
         </Card>
+        {isSubscribed && (
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <CalendarClock className="h-5 w-5" />
+                Daily Review Reminder
+              </CardTitle>
+              <CardDescription>
+                Get a daily nudge when you have items that need attention. Sent
+                once per day at 9 AM.
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <UserSettingSwitchCard
+                settingKey="reviewReminderEnabled"
+                label="Enable daily reminder"
+                description="We will send you a push notification when you have BAD, OLD, or soon-to-expire items to review."
+              />
+              {/* TODO: Add time picker for reviewReminderTime preference once UI pattern is decided. */}
+            </CardContent>
+          </Card>
+        )}
       </div>
     </SettingsPanel>
   );
