@@ -84,7 +84,7 @@ export function AtRiskReviewComplete({
 
   const headline =
     eatenCount > 0 && discardedCount === 0 && skippedCount === 0
-      ? "Kitchen is spotless! 🎉"
+      ? "All done! 🎉"
       : eatenCount > 0 || discardedCount > 0
         ? "Nice work checking in! 🥦"
         : "No worries, check back tomorrow.";
