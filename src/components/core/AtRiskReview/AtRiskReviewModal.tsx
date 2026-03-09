@@ -27,6 +27,19 @@ export function AtRiskReviewModal() {
 
   const [isOpen, setIsOpen] = useState(shouldOpen);
 
+  // Sync isOpen when shouldOpen transitions from false → true after hydration.
+  // shouldOpen depends on isMobile (resolved client-side) and the at-risk query,
+  // both of which are false/empty during SSR. Without this effect the modal never
+  // auto-opens because useState(shouldOpen) only captures the initial render value.
+  useEffect(() => {
+    if (shouldOpen && !isOpen) {
+      setIsOpen(true);
+    }
+    // Only run when shouldOpen changes; isOpen intentionally omitted so closing
+    // the drawer (setIsOpen(false)) doesn't immediately re-open it.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [shouldOpen]);
+
   // Save element focused before modal opens so we can restore it on close
   const previousFocusRef = useRef<Element | null>(null);
 
@@ -82,8 +95,12 @@ export function AtRiskReviewModal() {
       navigator.serviceWorker.removeEventListener("message", handler);
   }, []); // empty — uses ref to avoid re-registering listener on every render
 
-  // Gate: nothing to show
-  if (!shouldOpen) return null;
+  // Gate: nothing to show AND modal is closed — skip rendering entirely.
+  // This guard must come AFTER all effect hooks so the SW postMessage listener
+  // and the intent param handler are always registered even when shouldOpen starts
+  // false (e.g. before isMobile resolves). Moving it above the effects would cause
+  // OPEN_AT_RISK_REVIEW postMessages to silently drop on initial page load.
+  if (!shouldOpen && !isOpen) return null;
 
   const reviewed = review.results.length;
   const total = review.queue.length + reviewed;
