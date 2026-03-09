@@ -1,9 +1,9 @@
-import React from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { type ReactFC, cn } from "@/lib/utils";
+import { AnimatePresence, motion } from "framer-motion";
+import type React from "react";
 import { Drawer } from "vaul";
 import { DrawerContext } from "@/components/DrawerContext";
 import { useControlledOpen } from "@/hooks/useControlledOpen";
+import { cn, type ReactFC } from "@/lib/utils";
 
 export interface BottomDrawerClassNames {
   overlay?: string;
@@ -26,6 +26,7 @@ export interface BottomDrawerProps {
         close: () => void;
       }) => React.ReactNode)
     | null;
+  autoFocus?: boolean;
 }
 
 export const BottomDrawer: ReactFC<BottomDrawerProps> = ({
@@ -36,6 +37,7 @@ export const BottomDrawer: ReactFC<BottomDrawerProps> = ({
   trigger,
   classNames,
   renderHeader,
+  autoFocus = false,
 }) => {
   const { isOpen, setIsOpen, close } = useControlledOpen({
     open,
@@ -70,7 +72,7 @@ export const BottomDrawer: ReactFC<BottomDrawerProps> = ({
 
   return (
     <DrawerContext.Provider value={{ close }}>
-      <Drawer.Root open={isOpen} onOpenChange={setIsOpen}>
+      <Drawer.Root open={isOpen} onOpenChange={setIsOpen} autoFocus={autoFocus}>
         <AnimatePresence>
           {isOpen && (
             <motion.div
@@ -93,13 +95,13 @@ export const BottomDrawer: ReactFC<BottomDrawerProps> = ({
 
         <Drawer.Overlay
           className={cn(
-            "fixed inset-0 z-[2] bg-black/40 backdrop-blur-md dark:bg-black/60",
+            "fixed inset-0 z-[40] bg-black/40 backdrop-blur-md dark:bg-black/60",
             classNames?.overlay,
           )}
         />
         <Drawer.Content
           className={cn(
-            "fixed right-0 bottom-0 left-0 z-[3] mx-auto flex w-[95%] flex-col rounded-t-[10px] bg-white dark:bg-zinc-900",
+            "fixed right-0 bottom-0 left-0 z-[50] mx-auto flex w-[95%] flex-col rounded-t-[10px] bg-white dark:bg-zinc-900",
             "dark:border-t dark:border-zinc-800",
             "max-w-[500px]",
             classNames?.content,

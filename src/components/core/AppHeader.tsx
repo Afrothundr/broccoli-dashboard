@@ -1,13 +1,13 @@
 "use client";
 
-import { Logo } from "./Logo";
-import { AppHeaderUser } from "./HeaderUser";
-import { blogLink, chatLink, homeLink } from "@/config/links";
-import { useKitzeUI } from "@/components/KitzeUIContext";
-import { ThemeSwitchMinimalNextThemes } from "@/components/ThemeSwitchMinimalNextThemes";
 import { HeaderCustomized } from "@/components/core/HeaderCustomized";
 import { HeaderLinks } from "@/components/core/HeaderLinks";
+import { useKitzeUI } from "@/components/KitzeUIContext";
 import { NotificationBell } from "@/components/NotificationBell";
+import { ThemeSwitchMinimalNextThemes } from "@/components/ThemeSwitchMinimalNextThemes";
+import { blogLink, chatLink } from "@/config/links";
+import { AppHeaderUser } from "./HeaderUser";
+import { Logo } from "./Logo";
 
 export default function AppHeader() {
   const { isMobile } = useKitzeUI();

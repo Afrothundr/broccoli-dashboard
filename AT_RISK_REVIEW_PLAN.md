@@ -153,7 +153,7 @@ function shouldShowReview(): boolean {
 }
 
 function markReviewComplete(): void {
-  localStorage.setItem(STORAGE_KEY, new Date().toISOString());
+  localStorage.setItem(STORAGE_KEY, new Date().toDateString());
 }
 ```
 
@@ -167,7 +167,7 @@ The session is marked complete when:
 
 ```typescript
 type ReviewDecision =
-  | { type: "eaten"; percentConsumed: 100 }
+  | { type: "eaten" }
   | { type: "discarded" }
   | { type: "updated"; percentConsumed: number; status?: ItemStatusType }
   | { type: "skipped" };

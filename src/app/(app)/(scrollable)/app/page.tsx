@@ -1,16 +1,18 @@
 "use client";
 import dayjs from "dayjs";
+import { AtRiskReviewModal } from "@/components/core/AtRiskReview";
+import { AverageTrip } from "@/components/core/AverageTrip";
+import { GroceryTrips } from "@/components/core/GroceryTrips";
+import { ImageUpload } from "@/components/core/ImageUpload";
+import { Inventory } from "@/components/core/Inventory";
+import { ItemBreakdown } from "@/components/core/ItemBreakdown";
 import { TotalSavings } from "@/components/core/TotalSavings";
 import { UsageRate } from "@/components/core/UsageRate";
-import { AverageTrip } from "@/components/core/AverageTrip";
-import { ItemBreakdown } from "@/components/core/ItemBreakdown";
-import { Inventory } from "@/components/core/Inventory";
-import { ImageUpload } from "@/components/core/ImageUpload";
-import { GroceryTrips } from "@/components/core/GroceryTrips";
 
 export default function AppPage() {
   return (
     <div className="vertical space-y-8">
+      <AtRiskReviewModal />
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
