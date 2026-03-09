@@ -7,6 +7,7 @@ import {
   type PanInfo,
   useAnimation,
   useMotionValue,
+  useReducedMotion,
   useTransform,
 } from "framer-motion";
 import { ChevronDown, Trash2, Utensils } from "lucide-react";
@@ -76,9 +77,12 @@ export function AtRiskReviewCard({
   style,
   isTop,
 }: AtRiskReviewCardProps) {
+  const prefersReducedMotion = useReducedMotion();
   const dragX = useMotionValue(0);
   const dragY = useMotionValue(0);
-  const rotate = useTransform(dragX, [-200, 0, 200], [-15, 0, 15]);
+  // Always call useTransform (hooks must not be conditional), but only apply
+  // the result when the user hasn't requested reduced motion.
+  const rotateTransform = useTransform(dragX, [-200, 0, 200], [-15, 0, 15]);
   const controls = useAnimation();
 
   const [showDetails, setShowDetails] = useState(false);
@@ -98,17 +102,29 @@ export function AtRiskReviewCard({
 
   async function handleEatenButtonClick() {
     if ("vibrate" in navigator) navigator.vibrate(50);
-    await controls.start({ x: 300, opacity: 0, transition: { duration: 0.3 } });
+    if (prefersReducedMotion) {
+      await controls.start({ opacity: 0, transition: { duration: 0.2 } });
+    } else {
+      await controls.start({
+        x: 300,
+        opacity: 0,
+        transition: { duration: 0.3 },
+      });
+    }
     onDecision({ type: "eaten" });
   }
 
   async function handleDiscardButtonClick() {
     if ("vibrate" in navigator) navigator.vibrate(50);
-    await controls.start({
-      x: -300,
-      opacity: 0,
-      transition: { duration: 0.3 },
-    });
+    if (prefersReducedMotion) {
+      await controls.start({ opacity: 0, transition: { duration: 0.2 } });
+    } else {
+      await controls.start({
+        x: -300,
+        opacity: 0,
+        transition: { duration: 0.3 },
+      });
+    }
     onDecision({ type: "discarded" });
   }
 
@@ -125,7 +141,12 @@ export function AtRiskReviewCard({
       whileDrag={{ cursor: "grabbing" }}
       onDragEnd={handleDragEnd}
       animate={controls}
-      style={{ x: dragX, y: dragY, rotate, ...style }}
+      style={{
+        x: dragX,
+        y: dragY,
+        rotate: prefersReducedMotion ? 0 : rotateTransform,
+        ...style,
+      }}
       className="relative mx-auto w-full max-w-sm overflow-hidden rounded-2xl bg-white shadow-xl select-none dark:bg-zinc-900"
     >
       {/* Status top strip */}

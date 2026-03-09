@@ -1,6 +1,6 @@
 "use client";
 
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { ArrowLeftRight } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import type { CombinedItemType } from "@/components/core/Inventory";
@@ -24,6 +24,7 @@ export function AtRiskReviewDeck({
   onDecision,
   isLoading = false,
 }: AtRiskReviewDeckProps) {
+  const prefersReducedMotion = useReducedMotion();
   const [showHint, setShowHint] = useState(false);
   const hintTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const hintDismissed = useRef(false);
@@ -106,7 +107,11 @@ export function AtRiskReviewDeck({
               opacity: 0,
               transition: { duration: 0.15 },
             }}
-            transition={{ type: "spring", stiffness: 300, damping: 30 }}
+            transition={
+              prefersReducedMotion
+                ? { duration: 0 }
+                : { type: "spring", stiffness: 300, damping: 30 }
+            }
           >
             <AtRiskReviewCard
               item={item}
@@ -123,19 +128,23 @@ export function AtRiskReviewDeck({
           <motion.div
             key="swipe-hint"
             className="pointer-events-none absolute bottom-4 left-1/2 z-10 flex -translate-x-1/2 flex-col items-center gap-1"
-            initial={{ opacity: 0, y: 8 }}
+            initial={{ opacity: 0, y: prefersReducedMotion ? 0 : 8 }}
             animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 8 }}
-            transition={{ duration: 0.3 }}
+            exit={{ opacity: 0, y: prefersReducedMotion ? 0 : 8 }}
+            transition={{ duration: prefersReducedMotion ? 0.15 : 0.3 }}
           >
             <motion.div
-              animate={{ x: [0, -14, 14, 0] }}
-              transition={{
-                duration: 1.4,
-                repeat: Infinity,
-                repeatDelay: 0.6,
-                ease: "easeInOut",
-              }}
+              animate={prefersReducedMotion ? {} : { x: [0, -14, 14, 0] }}
+              transition={
+                prefersReducedMotion
+                  ? {}
+                  : {
+                      duration: 1.4,
+                      repeat: Infinity,
+                      repeatDelay: 0.6,
+                      ease: "easeInOut",
+                    }
+              }
               className="bg-background/80 border-border text-muted-foreground flex items-center gap-2 rounded-full border px-4 py-2 text-sm shadow-md backdrop-blur-sm"
             >
               <ArrowLeftRight size={16} />
