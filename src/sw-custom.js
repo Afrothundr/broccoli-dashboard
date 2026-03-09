@@ -25,7 +25,12 @@ self.addEventListener("push", (event) => {
         icon: notificationData.icon,
         badge: notificationData.badge,
         data: data.data || {},
-        tag: data.data?.itemId ? `item-${data.data.itemId}` : "notification",
+        tag:
+          data.data?.type === "AT_RISK_REVIEW"
+            ? "at-risk-review"
+            : data.data?.itemId
+              ? `item-${data.data.itemId}`
+              : "notification",
         requireInteraction: false,
         vibrate: [200, 100, 200],
       };
@@ -51,34 +56,25 @@ self.addEventListener("push", (event) => {
 // Listen for notification clicks
 self.addEventListener("notificationclick", (event) => {
   console.log("[SW Push] Notification click received.");
-
   event.notification.close();
 
-  // Determine the URL to open
-  let urlToOpen = "/app";
+  const data = event.notification.data || {};
+  const urlToOpen =
+    data.type === "AT_RISK_REVIEW" ? "/app?intent=review" : "/app";
 
-  if (event.notification.data && event.notification.data.itemId) {
-    // If there's an item ID, we could navigate to a specific item page
-    // For now, just go to the main app page
-    urlToOpen = "/app";
-  }
-
-  // Open or focus the app
   event.waitUntil(
     clients
-      .matchAll({
-        type: "window",
-        includeUncontrolled: true,
-      })
+      .matchAll({ type: "window", includeUncontrolled: true })
       .then((clientList) => {
-        // Check if there's already a window open
-        for (let i = 0; i < clientList.length; i++) {
-          const client = clientList[i];
+        for (var i = 0; i < clientList.length; i++) {
+          var client = clientList[i];
           if (client.url.includes("/app") && "focus" in client) {
+            if (data.type === "AT_RISK_REVIEW") {
+              client.postMessage({ type: "OPEN_AT_RISK_REVIEW" });
+            }
             return client.focus();
           }
         }
-        // If no window is open, open a new one
         if (clients.openWindow) {
           return clients.openWindow(urlToOpen);
         }
