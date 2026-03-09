@@ -1,6 +1,6 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 import { useEffect, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { ItemStatusType } from "@/generated/prisma/client";
@@ -28,6 +28,8 @@ export function AtRiskReviewComplete({
   results,
   onClose,
 }: AtRiskReviewCompleteProps) {
+  const prefersReducedMotion = useReducedMotion();
+
   const eatenCount = useMemo(
     () =>
       results.filter(
@@ -67,17 +69,22 @@ export function AtRiskReviewComplete({
     [results],
   );
 
-  // Fire confetti once on mount if anything was eaten
+  // Fire confetti once on mount if anything was eaten (suppressed when prefers-reduced-motion is set)
   useEffect(() => {
     if (eatenCount > 0) {
-      void import("canvas-confetti").then(({ default: confetti }) => {
-        confetti({
-          particleCount: 80,
-          spread: 60,
-          origin: { y: 0.6 },
-          colors: ["#85c941", "#4ade80", "#22c55e"],
+      const reducedMotion = window.matchMedia(
+        "(prefers-reduced-motion: reduce)",
+      ).matches;
+      if (!reducedMotion) {
+        void import("canvas-confetti").then(({ default: confetti }) => {
+          confetti({
+            particleCount: 80,
+            spread: 60,
+            origin: { y: 0.6 },
+            colors: ["#85c941", "#4ade80", "#22c55e"],
+          });
         });
-      });
+      }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []); // empty deps — intentionally fires once on mount
@@ -91,9 +98,9 @@ export function AtRiskReviewComplete({
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 20 }}
+      initial={{ opacity: 0, y: prefersReducedMotion ? 0 : 20 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.4 }}
+      transition={{ duration: prefersReducedMotion ? 0.15 : 0.4 }}
       className="flex h-full flex-col items-center justify-center gap-6 px-4 text-center"
     >
       <span className="text-6xl">{eatenCount > 0 ? "🥦" : "✨"}</span>
