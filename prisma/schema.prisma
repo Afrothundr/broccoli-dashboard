@@ -1,6 +1,6 @@
 generator client {
-  provider = "prisma-client-js"
-  output   = "../src/generated/prisma"
+  provider        = "prisma-client-js"
+  output          = "../src/generated/prisma"
   previewFeatures = ["fullTextSearchPostgres"]
 }
 
@@ -39,12 +39,12 @@ model User {
 
   preferences Json? @default("{}")
 
-  sessions Session[]
-  accounts Account[]
-  groceryTrips   GroceryTrip[]
-  items          Item[]
-  reminders      Reminder[]
-  notifications  Notification[]
+  sessions          Session[]
+  accounts          Account[]
+  groceryTrips      GroceryTrip[]
+  items             Item[]
+  reminders         Reminder[]
+  notifications     Notification[]
   pushSubscriptions PushSubscription[]
 
   // better-auth-admin
@@ -57,7 +57,8 @@ model User {
   username        String?
   displayUsername String?
 
-  onboarded Boolean @default(false)
+  onboarded      Boolean   @default(false)
+  lastReviewedAt DateTime?
 
   @@unique([username])
   @@map("users")
@@ -233,6 +234,7 @@ enum NotificationType {
   ITEM_EXPIRING
   ITEM_EXPIRED
   ITEM_STATUS_CHANGED
+  REVIEW_REMINDER
   SYSTEM
 }
 

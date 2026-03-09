@@ -22,6 +22,11 @@ export const userPreferencesSchema = z.object({
   emailMarketing: z.boolean().default(true),
   emailUpdates: z.boolean().default(true),
   emailFrequency: z.enum(["daily", "weekly", "monthly"]).default("weekly"),
+  reviewReminderEnabled: z.boolean().default(true),
+  reviewReminderTime: z
+    .string()
+    .regex(/^\d{2}:\d{2}$/)
+    .default("09:00"),
 
   // AI Provider fields (dynamically generated)
   ...providerEnabledFields,
