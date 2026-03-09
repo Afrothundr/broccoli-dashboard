@@ -1,16 +1,16 @@
 import { TRPCError } from "@trpc/server";
 import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc";
 import {
-  getSinglePreferenceSchema,
-  updatePreferenceSchema,
-  userPreferencesSchema,
-  type PreferenceKey,
-} from "@/types/user-preferences";
-import { UpdateProfileInput } from "@/types/user";
-import {
   getEnhancedUser,
   getUploadThingImageConnectDisconnectArgs,
 } from "@/server/db/utils";
+import { UpdateProfileInput } from "@/types/user";
+import {
+  getSinglePreferenceSchema,
+  type PreferenceKey,
+  updatePreferenceSchema,
+  userPreferencesSchema,
+} from "@/types/user-preferences";
 
 export const userRouter = createTRPCRouter({
   getCurrentUser: protectedProcedure.query(async ({ ctx }) => {
@@ -204,6 +204,14 @@ export const userRouter = createTRPCRouter({
     await ctx.db.user.update({
       where: { id: ctx.session.user.id },
       data: { onboarded: false }, // Set onboarded to false
+    });
+    return { success: true };
+  }),
+
+  markReviewComplete: protectedProcedure.mutation(async ({ ctx }) => {
+    await ctx.db.user.update({
+      where: { id: ctx.session.user.id },
+      data: { lastReviewedAt: new Date() },
     });
     return { success: true };
   }),

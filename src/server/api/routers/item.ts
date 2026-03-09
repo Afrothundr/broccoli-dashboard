@@ -1,9 +1,27 @@
 import { TRPCError } from "@trpc/server";
-import { createTRPCRouter, protectedProcedure } from "../trpc";
-import { createItem, getFilteredItems, updateItem } from "@/types/item";
 import { z } from "zod";
+import { createItem, getFilteredItems, updateItem } from "@/types/item";
+import { createTRPCRouter, protectedProcedure } from "../trpc";
 
 export const itemRouter = createTRPCRouter({
+  getAtRiskItems: protectedProcedure.query(async ({ ctx }) => {
+    const userId = ctx.session.user.id;
+    if (!userId) {
+      throw new TRPCError({ code: "UNAUTHORIZED" });
+    }
+    return ctx.db.item.findMany({
+      where: {
+        userId,
+        status: { in: ["BAD", "OLD", "FRESH"] },
+      },
+      include: {
+        itemTypes: {
+          select: { id: true, name: true, suggested_life_span_seconds: true },
+        },
+      },
+      orderBy: { status: "asc" },
+    });
+  }),
   getItems: protectedProcedure
     .input(getFilteredItems)
     .query(async ({ ctx, input }) => {
