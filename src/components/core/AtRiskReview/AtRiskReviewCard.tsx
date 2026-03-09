@@ -89,8 +89,10 @@ export function AtRiskReviewCard({
 
   function handleDragEnd(_: PointerEvent, info: PanInfo) {
     if (info.offset.x > SWIPE_THRESHOLD) {
+      if ("vibrate" in navigator) navigator.vibrate(50);
       onDecision({ type: "eaten" });
     } else if (info.offset.x < -SWIPE_THRESHOLD) {
+      if ("vibrate" in navigator) navigator.vibrate(50);
       onDecision({ type: "discarded" });
     } else if (info.offset.y < -SWIPE_THRESHOLD) {
       onDecision({ type: "skipped" });
