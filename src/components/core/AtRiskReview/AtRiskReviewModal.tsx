@@ -31,13 +31,16 @@ export function AtRiskReviewModal() {
   // shouldOpen depends on isMobile (resolved client-side) and the at-risk query,
   // both of which are false/empty during SSR. Without this effect the modal never
   // auto-opens because useState(shouldOpen) only captures the initial render value.
+  //
+  // We track the previous value of shouldOpen in a ref so we only call setIsOpen(true)
+  // when shouldOpen transitions false → true. This avoids needing isOpen as a dep
+  // (which would cause a re-open race whenever the user manually closes the modal).
+  const prevShouldOpenRef = useRef(shouldOpen);
   useEffect(() => {
-    if (shouldOpen && !isOpen) {
+    if (shouldOpen && !prevShouldOpenRef.current) {
       setIsOpen(true);
     }
-    // Only run when shouldOpen changes; isOpen intentionally omitted so closing
-    // the drawer (setIsOpen(false)) doesn't immediately re-open it.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    prevShouldOpenRef.current = shouldOpen;
   }, [shouldOpen]);
 
   // Save element focused before modal opens so we can restore it on close
