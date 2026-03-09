@@ -1,12 +1,17 @@
-import { motion } from 'framer-motion';
-import { useState } from 'react';
-import type { CombinedItemType } from '@/components/core/Inventory';
-import { Button } from '@/components/ui/button';
-import { ItemStatusType } from '@/generated/prisma/client';
+import { motion } from "framer-motion";
+import { useState } from "react";
+import type { CombinedItemType } from "@/components/core/Inventory";
+import { Button } from "@/components/ui/button";
+import { Slider } from "@/components/ui/slider";
+import { ItemStatusType } from "@/generated/prisma/client";
 
 interface AtRiskReviewCardDetailsProps {
   item: CombinedItemType;
-  onConfirm: (decision: { type: 'updated'; percentConsumed: number; status?: ItemStatusType }) => void;
+  onConfirm: (decision: {
+    type: "updated";
+    percentConsumed: number;
+    status?: ItemStatusType;
+  }) => void;
   onCancel: () => void;
 }
 
@@ -16,7 +21,9 @@ export function AtRiskReviewCardDetails({
   onCancel,
 }: AtRiskReviewCardDetailsProps) {
   const [percentConsumed, setPercentConsumed] = useState(item.percentConsumed);
-  const [statusOverride, setStatusOverride] = useState<ItemStatusType | undefined>(undefined);
+  const [statusOverride, setStatusOverride] = useState<
+    ItemStatusType | undefined
+  >(undefined);
 
   const isDiscarded = statusOverride === ItemStatusType.DISCARDED;
   const isAllEaten =
@@ -30,7 +37,7 @@ export function AtRiskReviewCardDetails({
   }
 
   function handleConfirm() {
-    onConfirm({ type: 'updated', percentConsumed, status: statusOverride });
+    onConfirm({ type: "updated", percentConsumed, status: statusOverride });
   }
 
   const quickPicks = [0, 25, 50, 75, 100];
@@ -38,38 +45,40 @@ export function AtRiskReviewCardDetails({
   return (
     <motion.div
       initial={{ height: 0, opacity: 0 }}
-      animate={{ height: 'auto', opacity: 1 }}
+      animate={{ height: "auto", opacity: 1 }}
       exit={{ height: 0, opacity: 0 }}
-      transition={{ type: 'spring', bounce: 0.1, duration: 0.4 }}
-      className='overflow-hidden'
+      transition={{ type: "spring", bounce: 0.1, duration: 0.4 }}
+      className="overflow-hidden"
     >
-      <div className='flex flex-col gap-4 px-4 pb-4 pt-2'>
+      <div className="flex flex-col gap-4 px-4 pt-2 pb-4">
         {/* Percentage display */}
-        <div className={isDiscarded ? 'opacity-50 pointer-events-none' : ''}>
-          <p className='text-center text-5xl font-bold tabular-nums'>
+        <div className={isDiscarded ? "pointer-events-none opacity-50" : ""}>
+          <p className="text-center text-5xl font-bold tabular-nums">
             {percentConsumed}%
           </p>
 
           {/* Range slider */}
-          <input
-            type='range'
+          <Slider
             min={0}
             max={100}
-            value={percentConsumed}
-            onChange={(e) => handlePercentChange(Number(e.target.value))}
-            className='w-full accent-primary mt-3'
+            step={1}
+            value={[percentConsumed]}
+            onValueChange={([val]) =>
+              handlePercentChange(val ?? percentConsumed)
+            }
+            className="mt-3"
           />
 
           {/* Quick-pick buttons */}
-          <div className='grid grid-cols-5 gap-1 mt-2'>
+          <div className="mt-2 grid grid-cols-5 gap-1">
             {quickPicks.map((val) => (
               <Button
                 key={val}
-                type='button'
-                variant={percentConsumed === val ? 'default' : 'outline'}
-                size='sm'
+                type="button"
+                variant={percentConsumed === val ? "default" : "outline"}
+                size="sm"
                 onClick={() => handlePercentChange(val)}
-                className='text-xs px-0'
+                className="px-0 text-xs"
               >
                 {val}%
               </Button>
@@ -78,36 +87,44 @@ export function AtRiskReviewCardDetails({
         </div>
 
         {/* Status action row */}
-        <div className='grid grid-cols-3 gap-1'>
+        <div className="grid grid-cols-3 gap-1">
           <Button
-            type='button'
-            variant={!statusOverride && !isAllEaten ? 'default' : 'outline'}
-            size='sm'
+            type="button"
+            variant={!statusOverride && !isAllEaten ? "default" : "outline"}
+            size="sm"
             onClick={() => setStatusOverride(undefined)}
-            className='text-xs flex flex-col h-auto py-2 gap-0.5'
+            className="flex h-auto flex-col gap-0.5 py-2 text-xs"
           >
             <span>🍽</span>
             <span>Still eating</span>
           </Button>
           <Button
-            type='button'
-            variant={statusOverride === ItemStatusType.EATEN || percentConsumed === 100 ? 'default' : 'outline'}
-            size='sm'
+            type="button"
+            variant={
+              statusOverride === ItemStatusType.EATEN || percentConsumed === 100
+                ? "default"
+                : "outline"
+            }
+            size="sm"
             onClick={() => {
               setStatusOverride(ItemStatusType.EATEN);
               setPercentConsumed(100);
             }}
-            className='text-xs flex flex-col h-auto py-2 gap-0.5'
+            className="flex h-auto flex-col gap-0.5 py-2 text-xs"
           >
             <span>✅</span>
             <span>All eaten</span>
           </Button>
           <Button
-            type='button'
-            variant={statusOverride === ItemStatusType.DISCARDED ? 'default' : 'outline'}
-            size='sm'
+            type="button"
+            variant={
+              statusOverride === ItemStatusType.DISCARDED
+                ? "default"
+                : "outline"
+            }
+            size="sm"
             onClick={() => setStatusOverride(ItemStatusType.DISCARDED)}
-            className='text-xs flex flex-col h-auto py-2 gap-0.5'
+            className="flex h-auto flex-col gap-0.5 py-2 text-xs"
           >
             <span>🗑</span>
             <span>Threw it out</span>
@@ -116,17 +133,17 @@ export function AtRiskReviewCardDetails({
 
         {/* Confirm button */}
         <Button
-          className='w-full bg-green-600 hover:bg-green-700 text-white'
+          className="w-full bg-green-600 text-white hover:bg-green-700"
           onClick={handleConfirm}
         >
           Save &amp; Next →
         </Button>
 
         {/* Cancel link */}
-        <div className='text-center'>
+        <div className="text-center">
           <button
-            type='button'
-            className='text-sm text-muted-foreground underline'
+            type="button"
+            className="text-muted-foreground text-sm underline"
             onClick={onCancel}
           >
             Never mind
