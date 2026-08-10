@@ -10,7 +10,8 @@ export async function register() {
     process.env.NEXT_RUNTIME,
   );
 
-  const { serverEnv } = await import("@/env");
+  // Imported for their env validation side effect only.
+  await import("@/env");
   await import("@/env/client");
 
   if (process.env.NEXT_RUNTIME === "nodejs") {
@@ -20,17 +21,11 @@ export async function register() {
 
     logEnvConfigStatus();
 
-    if (serverEnv.NEXT_PUBLIC_ENABLE_CRON === true) {
-      const { startMainCron } =
-        await require("./server/instrumentation/cron/scripts/main-cron");
-      startMainCron();
-    }
-
-    if (serverEnv.NEXT_PUBLIC_ENABLE_BACKGROUND_JOBS) {
-      const { startWorker } =
-        await require("./server/instrumentation/bull/worker");
-      console.log("🔄 Redis worker starting...");
-      startWorker();
-    }
+    // The hourly expiring-items cron, the daily review reminders, and the
+    // BullMQ worker used to start here. All three read the legacy database
+    // and pushed web notifications — work the mobile app now owns (expiry
+    // sweep + Expo push, driven by broccoli-scheduler). They are not started
+    // from a feature flag anymore because an env var flipped back on would
+    // silently resurrect notifications from a retired database.
   }
 }
